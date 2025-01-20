@@ -100,7 +100,12 @@ def setup():
     
     print("Processing files in:", audio_path)
     print("Measuring channels:", selected_channels)
-    return audio_path, selected_channels
+    
+    is_reference = input("Are you measuring the Main Listening Position (MLP)? (y/n): ").strip().lower() in ("y", "yes")
+    position_number = 0 if is_reference else int(input("Enter the position number (starting from 0): "))
+    num_iterations = 1 if is_reference else int(input("How many measurements per position?: "))
+    
+    return audio_path, selected_channels, is_reference, num_iterations, position_number
 
 def run_measurements(channels, is_reference, num_iterations, position_number):
     """Run the measurement process for selected channels."""
@@ -118,12 +123,7 @@ def run_measurements(channels, is_reference, num_iterations, position_number):
     print(f"Completed {len(channels) * num_iterations} measurements.")
 
 if __name__ == "__main__":
-    # User-configurable parameters
-    CREATE_REFERENCE = False
-    NUM_ITERATIONS = 2
-    POSITION_NUMBER = 0
-    
     # Setup and run
-    audio_path, selected_channels = setup()
+    audio_path, selected_channels, is_reference, num_iterations, position_number = setup()
     if selected_channels:
-        run_measurements(selected_channels, CREATE_REFERENCE, NUM_ITERATIONS, POSITION_NUMBER)
+        run_measurements(selected_channels, is_reference, num_iterations, position_number)
