@@ -2,6 +2,7 @@ import time
 import pyautogui
 import os
 import json
+import vlc
 
 # Constants
 SETTINGS_FILE = "settings.json"
@@ -11,13 +12,25 @@ DEFAULT_CHANNELS = ["C", "FL", "FR", "SLA", "SRA", "TFL", "TFR", "TRL", "TRR", "
 pyautogui.FAILSAFE = True
 pyautogui.PAUSE = 0.5
 
-# Pyautogui positions (assumed locations)
-MEASURE_BUTTON_REW = (37, 57)
-NAME_TEXTBOX_REW = (275, 106)
-NOTES_TEXTBOX_REW = (140, 279)
-START_BUTTON_REW = (754, 747)
-PLAY_BUTTON_VLC = (1451, 371)
-BACK_BUTTON_VLC = (1492, 367)
+# Pyautogui positions
+REW_NAME_OFFSET = (-560, -642)
+REW_NOTES_OFFSET = (-560, -470)
+
+# Initialize VLC instance
+vlc_instance = vlc.Instance()
+player = vlc_instance.media_player_new()
+
+def play_sweep(source):
+    """Play the audio sweep using VLC."""
+    try:
+        media = vlc_instance.media_new(source)
+        player.set_media(media)
+        player.play()
+        time.sleep(2)  # Give time for VLC to initialize playback
+        if player.get_state() == vlc.State.Error:
+            print(f"Error: VLC could not play {source}. Check your audio output settings.")
+    except Exception as e:
+        print(f"VLC playback error: {e}")
 
 def save_settings(path, channels):
     """Save user settings to a JSON file."""
@@ -65,16 +78,32 @@ def get_audio_channels(mlp_files):
             continue
         print("Selected channels:", ", ".join(selected_channels))
         return selected_channels
+    
+def get_button_position(image):
+    location = pyautogui.locateCenterOnScreen(image, confidence=0.9)
+    return location
+
+def get_relative_position(reference, offset):
+    position = reference[0] + offset[0], reference[1] + offset[1]
+    return position
 
 def measure(channel, is_reference, iteration, position):
     """Automate measurement process using Pyautogui."""
-    pyautogui.click(*MEASURE_BUTTON_REW, clicks=2)
-    pyautogui.click(*NAME_TEXTBOX_REW, clicks=2)
+
+    # Get positions
+    measure_button_rew = get_button_position("MeasureButton.png")
+    pyautogui.click(*measure_button_rew, clicks=2)
+    
+    start_button_rew = get_button_position("StartButton.png")
+    name_textbox_rew = get_relative_position(start_button_rew, REW_NAME_OFFSET)
+    notes_textbox_rew = get_relative_position(start_button_rew, REW_NOTES_OFFSET)
+
+    pyautogui.click(*name_textbox_rew, clicks=2)
     measurement_name = f"{channel}" if is_reference else f"{channel}p{position}i{iteration}"
     pyautogui.typewrite(measurement_name)
-    pyautogui.click(*NOTES_TEXTBOX_REW)  # Commit name change
-    pyautogui.click(*START_BUTTON_REW)
-    pyautogui.click(*PLAY_BUTTON_VLC)
+    pyautogui.click(*notes_textbox_rew)
+    pyautogui.click(*start_button_rew)
+    play_sweep(os.path.join(audio_path, f"{channel}.mlp"))
     time.sleep(15)  # Wait for measurement to complete
 
 def setup():
@@ -97,14 +126,15 @@ def setup():
             save_choice = input("Save these settings for future use? (y/n): ").strip().lower()
             if save_choice in ("y", "yes"):
                 save_settings(audio_path, selected_channels)
-    
-    print("Processing files in:", audio_path)
-    print("Measuring channels:", selected_channels)
-    
-    is_reference = input("Are you measuring the Main Listening Position (MLP)? (y/n): ").strip().lower() in ("y", "yes")
-    position_number = 0 if is_reference else int(input("Enter the position number (starting from 0): "))
-    num_iterations = 1 if is_reference else int(input("How many measurements per position?: "))
-    
+
+    if audio_path and selected_channels:
+        print("Processing files in:", audio_path)
+        print("Measuring channels:", selected_channels)
+        
+        is_reference = input("Are you measuring the Main Listening Position (MLP)? (y/n): ").strip().lower() in ("y", "yes")
+        position_number = 0 if is_reference else int(input("Enter the position number (starting from 0): "))
+        num_iterations = 1 if is_reference else int(input("How many measurements per position?: "))
+        
     return audio_path, selected_channels, is_reference, num_iterations, position_number
 
 def run_measurements(channels, is_reference, num_iterations, position_number):
@@ -118,8 +148,8 @@ def run_measurements(channels, is_reference, num_iterations, position_number):
             for i in range(1, num_iterations + 1):
                 print(f"Iteration {i} of {num_iterations}")
                 measure(channel, is_reference, i, position_number)
-                if i < num_iterations:
-                    pyautogui.click(*BACK_BUTTON_VLC)
+                # if i < num_iterations:
+                #     pyautogui.click(*BACK_BUTTON_VLC)
     print(f"Completed {len(channels) * num_iterations} measurements.")
 
 if __name__ == "__main__":
