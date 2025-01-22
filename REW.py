@@ -62,7 +62,12 @@ import pyautogui
 # # REW API endpoint
 api_url = "http://localhost:4735/measurements/selected-uuid"
 api_url_delete = "http://localhost:4735/measurements/66fde9b7-4bad-45e3-b97b-a20460dff666"
-# api_url_problems = "http://localhost:4735/application/problems"
+api_url_warnings = "http://localhost:4735/application/warnings"
+api_url_naming = "http://localhost:4735/measure/naming"
+api_url_commands = "http://localhost:4735/measure/commands"
+api_url_commands = "http://localhost:4735/measure/commands"
+base_url = "http://localhost:4735"
+endpoint = "/application/commands"
 # api_url_errors = "http://localhost:4735/application/errors"
 
 # # Data to set the number of repetitions
@@ -71,8 +76,8 @@ api_url_delete = "http://localhost:4735/measurements/66fde9b7-4bad-45e3-b97b-a20
 try:
     # Send POST request to the API
     # response = requests.post(api_url, json=data)
-    response = requests.delete(api_url_delete)
-    # response = requests.get(api_url)
+    # response = requests.delete(api_url_delete)
+    response = requests.get(base_url + endpoint)
 
     # Check if the request was successful
     if response.status_code == 200:

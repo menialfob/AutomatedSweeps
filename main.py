@@ -23,10 +23,12 @@ DEFAULT_CHANNELS = [
 ]
 
 # REW endpoints
-WARNING_ENDPOINT_URL = "http://localhost:4735/application/warnings"
-ERROR_ENDPOINT_URL = "http://localhost:4735/application/errors"
-MEASUREMENT_UUID_ENDPOINT_URL = "http://localhost:4735/measurements/selected-uuid"
-MEASUREMENT_ENDPOINT_URL = "http://localhost:4735/measurements"
+WARNING_ENDPOINT = "http://localhost:4735/application/warnings"
+ERROR_ENDPOINT = "http://localhost:4735/application/errors"
+MEASUREMENT_UUID_ENDPOINT = "http://localhost:4735/measurements/selected-uuid"
+MEASUREMENT_ENDPOINT = "http://localhost:4735/measurements"
+VERSION_ENDPOINT = "http://localhost:4735/version"
+BASE_URL_ENDPOINT = "http://localhost:4735"
 
 # Pyautogui settings
 pyautogui.FAILSAFE = True
@@ -100,15 +102,22 @@ def get_audio_files():
 def get_audio_channels(mlp_files):
     """Prompt user to select audio channels from available .mlp files."""
     available_channels = {os.path.splitext(f)[0] for f in mlp_files}
+
+    # If "SWx" is found, replace it with "SW1" to "SW4"
+    if "SWx" in available_channels:
+        available_channels.remove("SWx")
+        available_channels.update({"SW1", "SW2", "SW3", "SW4"})
     while True:
-        print("Available channels:", ", ".join(available_channels))
+        sorted_channels = sorted(available_channels)  # Sort alphabetically
+        print("Available channels:", ", ".join(sorted_channels))
         channels = input("Enter the audio channels to measure (comma-separated): ")
         selected_channels = {ch.strip().upper() for ch in channels.split(",")}
-        if not selected_channels.issubset(available_channels):
+        if not selected_channels.issubset(sorted_channels):
             print("Error: Invalid channels. Please try again.")
             continue
-        print("Selected channels:", ", ".join(selected_channels))
-        return selected_channels
+        sorted_selected_channels = sorted(selected_channels)
+        print("Selected channels:", ", ".join(sorted_selected_channels))
+        return sorted_selected_channels
 
 
 def get_button_position(image):
@@ -134,13 +143,74 @@ def measure(channel, is_reference, iteration, position):
 
     pyautogui.click(*name_textbox_rew, clicks=2)
     measurement_name = (
-        f"{channel}" if is_reference else f"{channel}p{position}i{iteration}"
+        f"{channel}" if is_reference else f"{channel}-position{position}-iteration{iteration}"
     )
     pyautogui.typewrite(measurement_name)
     pyautogui.click(*notes_textbox_rew)
+
+    # Pause if the channel is SW2, SW3, or SW4
+    if channel in {"SW2", "SW3", "SW4"}:
+        input(f"You are measuring {channel}, please plug your {channel} into SW1 and press Enter to continue...")
+
     pyautogui.click(*start_button_rew)
-    play_sweep(os.path.join(audio_path, f"{channel}.mlp"))
+    play_sweep(os.path.join(audio_path, f"{'SWx' if channel.startswith('SW') else channel}.mlp"))
     time.sleep(15)  # Wait for measurement to complete
+    
+    # Clicking OK to get rid of dialog boxes
+    pyautogui.press("enter")
+    pyautogui.press("enter")
+    pyautogui.press("enter")
+
+def ensure_rew_api(endpoint):
+    """Checks if the REW API is running by sending a request to the endpoint."""
+    try:
+        response = requests.get(endpoint, timeout=3)  # Timeout to prevent long waits
+        if response.status_code == 200:
+            return True
+        else:
+            return False
+    except requests.exceptions.RequestException:
+        return False
+    
+def ensure_rew_settings(base_url):
+    """
+    Fetches and checks endpoint responses for correctness based on predefined expected values.
+    Returns a list of error descriptions if any values are incorrect.
+    """
+    
+    ENDPOINTS = [
+        "/measure/naming",
+        "/measure/playback-mode"
+    ]
+    
+    EXPECTED_VALUES = {
+        "/measure/naming": {
+            "namingOption": "Use as entered",
+            "prefixMeasNameWithOutput": False
+        },
+        "/measure/playback-mode": {
+            "message": "From file"
+        }
+    }
+    
+    errors = []
+    
+    for endpoint in ENDPOINTS:
+        try:
+            response = requests.get(f"{base_url}{endpoint}").json()
+        except Exception as e:
+            errors.append(f"Failed to fetch {endpoint}: {str(e)}")
+            continue
+        
+        expected_values = EXPECTED_VALUES.get(endpoint, {})
+        
+        for key, expected_value in expected_values.items():
+            if response.get(key) != expected_value:
+                errors.append(f"{endpoint}: {key} should be {expected_value}, but got {response.get(key)}")
+    
+    return errors
+    
+
 
 
 def get_measure_problems(endpoint):
@@ -192,9 +262,8 @@ def check_and_run_measure(
     max_attempts=3,
 ):
     """Runs MeasureSweep() and checks for new problems, retrying up to max_attempts times."""
-    initial_problems = get_measure_problems(warning_endpoint) + get_measure_problems(
-        error_endpoint
-    )
+    initial_problems = get_measure_problems(warning_endpoint) + get_measure_problems(error_endpoint)
+    print(f'DEBUG Initial problems: {initial_problems}')
     initial_times = {
         problem.get("time", "") for problem in initial_problems
     }  # Track initial problem timestamps
@@ -204,9 +273,8 @@ def check_and_run_measure(
         measure(channel, is_reference, iteration, position)
         attempts += 1
 
-        latest_problems = get_measure_problems(warning_endpoint) + get_measure_problems(
-            error_endpoint
-        )
+        latest_problems = get_measure_problems(warning_endpoint) + get_measure_problems(error_endpoint)
+        print(f'DEBUG latest problems: {latest_problems}')
         latest_times = {
             problem.get("time", "") for problem in latest_problems
         }  # Get latest problem timestamps
@@ -221,15 +289,10 @@ def check_and_run_measure(
 
         print(f"New problem detected: {latest_problems[-1]['title']}")
 
-        # Clicking OK to get rid of dialog boxes
-        pyautogui.press("enter")
-        pyautogui.press("enter")
-        pyautogui.press("enter")
-
         # Deleting bad measurement
         delete_measurement(
-            MEASUREMENT_ENDPOINT_URL,
-            get_selected_measurement(MEASUREMENT_UUID_ENDPOINT_URL),
+            MEASUREMENT_ENDPOINT,
+            get_selected_measurement(MEASUREMENT_UUID_ENDPOINT),
         )
 
         # Update initial_times to avoid detecting the same problem in the next iteration
@@ -253,7 +316,7 @@ def setup():
         if use_saved in ("y", "yes"):
             print("Loaded saved settings.")
             audio_path = settings["audio_path"]
-            selected_channels = set(settings["channels"])
+            selected_channels = sorted(set(settings["channels"]))
 
     if not audio_path or not selected_channels:
         audio_path, mlp_files = get_audio_files()
@@ -290,7 +353,7 @@ def run_measurements(channels, is_reference, num_iterations, position_number):
         if is_reference:
             print(f"Creating reference measurement for {channel}")
             check_and_run_measure(
-                channel, is_reference, 0, 0, WARNING_ENDPOINT_URL, ERROR_ENDPOINT_URL
+                channel, is_reference, 0, 0, WARNING_ENDPOINT, ERROR_ENDPOINT
             )
         else:
             print(
@@ -303,20 +366,29 @@ def run_measurements(channels, is_reference, num_iterations, position_number):
                     is_reference,
                     i,
                     position_number,
-                    WARNING_ENDPOINT_URL,
-                    ERROR_ENDPOINT_URL,
+                    WARNING_ENDPOINT,
+                    ERROR_ENDPOINT,
                 )
-                # if i < num_iterations:
-                #     pyautogui.click(*BACK_BUTTON_VLC)
     print(f"Completed {len(channels) * num_iterations} measurements.")
 
 
 if __name__ == "__main__":
-    # Setup and run
-    audio_path, selected_channels, is_reference, num_iterations, position_number = (
-        setup()
-    )
-    if selected_channels:
-        run_measurements(
-            selected_channels, is_reference, num_iterations, position_number
-        )
+    print("Starting measurement script")
+    if not ensure_rew_api(VERSION_ENDPOINT):
+        print("ERROR: REW API is not running. Exiting")
+    else:
+        # Checking for errors in setup
+        errors = ensure_rew_settings(BASE_URL_ENDPOINT)
+        if errors:
+            print("Errors detected in REW settings:")
+            for error in errors:
+                print(error)
+        else:
+            # Setup and run
+            audio_path, selected_channels, is_reference, num_iterations, position_number = (
+                setup()
+            )
+            if selected_channels:
+                run_measurements(
+                    selected_channels, is_reference, num_iterations, position_number
+                )
