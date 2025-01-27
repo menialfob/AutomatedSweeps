@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import sys
 
 import pyautogui
 import requests
@@ -121,7 +122,11 @@ def get_audio_channels(mlp_files):
 
 
 def get_button_position(image):
-    location = pyautogui.locateCenterOnScreen(image, confidence=0.9)
+    if getattr(sys, 'frozen', False):
+        image_location = os.path.join(sys._MEIPASS, image)
+    else:
+        image_location = image
+    location = pyautogui.locateCenterOnScreen(image_location, confidence=0.9)
     return location
 
 
@@ -263,7 +268,6 @@ def check_and_run_measure(
 ):
     """Runs MeasureSweep() and checks for new problems, retrying up to max_attempts times."""
     initial_problems = get_measure_problems(warning_endpoint) + get_measure_problems(error_endpoint)
-    print(f'DEBUG Initial problems: {initial_problems}')
     initial_times = {
         problem.get("time", "") for problem in initial_problems
     }  # Track initial problem timestamps
@@ -274,7 +278,6 @@ def check_and_run_measure(
         attempts += 1
 
         latest_problems = get_measure_problems(warning_endpoint) + get_measure_problems(error_endpoint)
-        print(f'DEBUG latest problems: {latest_problems}')
         latest_times = {
             problem.get("time", "") for problem in latest_problems
         }  # Get latest problem timestamps

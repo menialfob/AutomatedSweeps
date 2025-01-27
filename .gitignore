@@ -1,4 +1,4 @@
-REW.py
+build/
+dist/
 settings.json
-LocateButtons.py
-REW2.py
+*.spec
