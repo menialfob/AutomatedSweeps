@@ -19,7 +19,7 @@ def get_button_position(image_name):
         )  # When running as an executable
     else:
         base_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), "assets"
+            os.path.dirname(os.path.abspath(__file__)), "../assets"
         )  # When running as a script
 
     image_path = os.path.join(base_path, image_name)
@@ -65,7 +65,7 @@ def run_sweep(channel, is_reference, iteration, position, audio_path):
             audio_path, f"{'SWx' if channel.startswith('SW') else channel}.mlp"
         )
     )
-    time.sleep(13)  # Wait for measurement to complete
+    time.sleep(2)  # Wait for measurement to complete
 
     # Clicking OK to get rid of dialog boxes
     pyautogui.press("enter")

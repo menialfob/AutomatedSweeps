@@ -3,24 +3,36 @@ import time
 
 import vlc
 
-# Initialize VLC instance
-vlc_options = "--mmdevice-passthrough=2 --no-video"
-# --force-dolby-surround=1
-vlc_instance = vlc.Instance()
-player = vlc_instance.media_player_new()
-
 
 def play_sweep(source):
-    """Play the audio sweep using VLC."""
-    try:
+    """
+    Plays an audio sweep using VLC.
+    
+    Args:
+        source (str): Path or URL of the audio file.
+    """
+    # Initialize VLC instance and media player
+    global player  # Keep reference to avoid garbage collection
+    vlc_instance = vlc.Instance("--quiet")
+    player = vlc_instance.media_player_new()
+
+    try:   
+        # Load media
         media = vlc_instance.media_new(source)
         player.set_media(media)
+        
+        # Start playback
         player.play()
-        time.sleep(2)  # Give time for VLC to initialize playback
+        time.sleep(1)  # Allow time for VLC to start playing
+        
+        # Wait for playback to complete
+        while player.get_state() in {vlc.State.Opening, vlc.State.Buffering, vlc.State.Playing}:
+            time.sleep(1)
+        
+        # Check for errors
         if player.get_state() == vlc.State.Error:
-            print(
-                f"Error: VLC could not play {source}. Check your audio output settings."
-            )
+            print(f"Error: VLC could not play {source}. Check your audio output settings.")
+    
     except Exception as e:
         print(f"VLC playback error: {e}")
 
