@@ -1,12 +1,14 @@
-import vlc
-import time
 import os
+import time
+
+import vlc
 
 # Initialize VLC instance
 vlc_options = "--mmdevice-passthrough=2 --no-video"
 # --force-dolby-surround=1
 vlc_instance = vlc.Instance()
 player = vlc_instance.media_player_new()
+
 
 def play_sweep(source):
     """Play the audio sweep using VLC."""
@@ -21,6 +23,7 @@ def play_sweep(source):
             )
     except Exception as e:
         print(f"VLC playback error: {e}")
+
 
 def get_audio_files():
     """Prompt user for an audio file directory and validate the existence of .mlp files."""

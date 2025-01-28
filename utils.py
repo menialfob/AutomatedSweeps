@@ -1,6 +1,8 @@
-import os
 import json
+import os
+
 from config import SETTINGS_FILE
+
 
 def save_settings(path, channels):
     """Save user settings to a JSON file."""
@@ -19,6 +21,7 @@ def load_settings():
         except json.JSONDecodeError:
             print("Warning: Settings file is corrupted. Ignoring it.")
     return None
+
 
 def get_audio_channels(mlp_files):
     """Prompt user to select audio channels from available .mlp files."""
@@ -39,4 +42,3 @@ def get_audio_channels(mlp_files):
         sorted_selected_channels = sorted(selected_channels)
         print("Selected channels:", ", ".join(sorted_selected_channels))
         return sorted_selected_channels
-    
