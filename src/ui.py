@@ -12,7 +12,20 @@ from textual.widgets import (
 )
 from textual.binding import Binding
 from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll
+from textual.message import Message
 
+# class MeasurementProgressUpdate(Message):
+#     """Custom event to send progress updates to the UI."""
+
+#     def __init__(self, progress: float):
+#         self.progress = progress  # A float between 0 and 1
+#         super().__init__()
+
+# A custom event that main.py can handle
+class CommandSelected(Message):
+    def __init__(self, command_id: str):
+        self.command_id = command_id
+        super().__init__()
 
 class Commands(ListView):
     """A container widget for a list of commands."""
@@ -20,21 +33,23 @@ class Commands(ListView):
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         """Handle the selection of a list item."""
 
-        log = self.app.query_one("#Log", Log)
-        progress = self.app.query_one("#TotalProgress", MeasurementProgress)
-        if event.item.id == "configure":
-            log.write_line("Configuring measurement...")
-        elif event.item.id == "start":
-            log.write_line("Starting measurement...")
-            progress.start()
-        elif event.item.id == "pause":
-            log.write_line("Pausing measurement...")
-            progress.pause()
-        elif event.item.id == "stop":
-            log.write_line("Stopping measurement...")
-            progress.stop()
-        else:
-            log.write_line(event.item.id)
+        self.post_message(CommandSelected(event.item.id))  # Notify main.py
+
+        # log = self.app.query_one("#Log", Log)
+        # progress = self.app.query_one("#TotalProgress", MeasurementProgress)
+        # if event.item.id == "configure":
+        #     log.write_line("Configuring measurement...")
+        # elif event.item.id == "start":
+        #     log.write_line("Starting measurement...")
+        #     progress.start()
+        # elif event.item.id == "pause":
+        #     log.write_line("Pausing measurement...")
+        #     progress.pause()
+        # elif event.item.id == "stop":
+        #     log.write_line("Stopping measurement...")
+        #     progress.stop()
+        # else:
+        #     log.write_line(event.item.id)
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the list view."""
@@ -54,9 +69,9 @@ class MeasurementProgress(ProgressBar):
             1 / 60, self.update_progress, pause=True
         )
 
-    def update_progress(self) -> None:
+    def update_progress(self, steps: float | None = 1) -> None:
         """Update the progress bar value."""
-        self.advance()
+        self.advance(steps)
 
     def start(self) -> None:
         """Start the progress bar."""
@@ -91,27 +106,27 @@ class DefaultScreen(Screen):
         yield Footer(id="Footer", show_command_palette=False)
 
 
-class AutoSweepApp(App):
-    CSS_PATH = "textual.tcss"
-    BINDINGS = [
-        Binding("q", "quit", "Quit the application", show=True, priority=True),
-        Binding("s", "stop", "Stop the measurement", show=True, priority=True),
-        Binding("p", "pause", "Pause the measurement", show=True, priority=True),
-    ]
+# class AutoSweepApp(App):
+#     CSS_PATH = "ui.tcss"
+#     BINDINGS = [
+#         Binding("q", "quit", "Quit the application", show=True, priority=True),
+#         Binding("s", "stop", "Stop the measurement", show=True, priority=True),
+#         Binding("p", "pause", "Pause the measurement", show=True, priority=True),
+#     ]
 
-    def on_mount(self) -> None:
-        self.title = "Automated Sweeps"
-        self.sub_title = "Tool for automating REW measurements"
-        self.push_screen(DefaultScreen())
+#     def on_mount(self) -> None:
+#         self.title = "Automated Sweeps"
+#         self.sub_title = "Tool for automating REW measurements"
+#         self.push_screen(DefaultScreen())
 
-    async def on_ready(self) -> None:
-        # log = self.query_one("#Log", Log)
-        # for _ in range(10):
-        #     log.write_line("This is a log message.")
-        #     await asyncio.sleep(1)
-        ...
+#     async def on_ready(self) -> None:
+#         # log = self.query_one("#Log", Log)
+#         # for _ in range(10):
+#         #     log.write_line("This is a log message.")
+#         #     await asyncio.sleep(1)
+#         ...
 
 
-if __name__ == "__main__":
-    app = AutoSweepApp()
-    app.run()
+# if __name__ == "__main__":
+#     app = AutoSweepApp()
+#     app.run()
