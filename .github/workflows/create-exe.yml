@@ -23,7 +23,7 @@ jobs:
       uses: JackMcKew/pyinstaller-action-windows@main
       with:
         path: package
-        requirements: ../requirements.txt
+        requirements: "../requirements.txt"
 
     - uses: actions/upload-artifact@v4
       with:
