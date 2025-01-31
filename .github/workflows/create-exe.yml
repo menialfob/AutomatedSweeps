@@ -21,8 +21,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Package Application
       uses: JackMcKew/pyinstaller-action-windows@main
-      with:
-        path: .
 
     - uses: actions/upload-artifact@v4
       with:
