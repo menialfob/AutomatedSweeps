@@ -1,64 +1,28 @@
-from textual.app import App, ComposeResult
+from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import (
     Placeholder,
-    Label,
-    ListView,
-    ListItem,
     Header,
     Footer,
     ProgressBar,
     Log,
+    Button,
 )
-from textual.binding import Binding
 from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll
 from textual.message import Message
 
-# class MeasurementProgressUpdate(Message):
-#     """Custom event to send progress updates to the UI."""
+class MeasurementProgressUpdate(Message):
+    """Custom event to send progress updates to the UI."""
 
-#     def __init__(self, progress: float):
-#         self.progress = progress  # A float between 0 and 1
-#         super().__init__()
+    def __init__(self, progress: float):
+        self.progress = progress  # A float between 0 and 1
+        super().__init__()
 
 # A custom event that main.py can handle
 class CommandSelected(Message):
     def __init__(self, command_id: str):
         self.command_id = command_id
         super().__init__()
-
-class Commands(ListView):
-    """A container widget for a list of commands."""
-
-    def on_list_view_selected(self, event: ListView.Selected) -> None:
-        """Handle the selection of a list item."""
-
-        self.post_message(CommandSelected(event.item.id))  # Notify main.py
-
-        # log = self.app.query_one("#Log", Log)
-        # progress = self.app.query_one("#TotalProgress", MeasurementProgress)
-        # if event.item.id == "configure":
-        #     log.write_line("Configuring measurement...")
-        # elif event.item.id == "start":
-        #     log.write_line("Starting measurement...")
-        #     progress.start()
-        # elif event.item.id == "pause":
-        #     log.write_line("Pausing measurement...")
-        #     progress.pause()
-        # elif event.item.id == "stop":
-        #     log.write_line("Stopping measurement...")
-        #     progress.stop()
-        # else:
-        #     log.write_line(event.item.id)
-
-    def compose(self) -> ComposeResult:
-        """Create child widgets for the list view."""
-
-        yield ListItem(Label("Configure measurement"), id="configure")
-        yield ListItem(Label("Start measurement"), id="start")
-        yield ListItem(Label("Pause measurement"), id="pause")
-        yield ListItem(Label("Stop measurement"), id="stop")
-
 
 class MeasurementProgress(ProgressBar):
     """A progress bar widget for displaying measurement progress."""
@@ -89,44 +53,27 @@ class MeasurementProgress(ProgressBar):
 
 class DefaultScreen(Screen):
     def compose(self) -> ComposeResult:
-        yield Commands(id="Commands", name="Commands")
         yield Header(id="Header")
-        yield Placeholder(name="Overview", id="Overview")
-        with HorizontalGroup():
-            with VerticalScroll():
-                yield Log(id="Log", auto_scroll=True, max_lines=10)
-            with VerticalGroup():
+        with HorizontalGroup(id="MainArea"):
+            with VerticalGroup(id="Commands"):
+                yield Button(label="Configure measurement", id="configure", variant="default")
+                yield Button(label="Start measurement", id="start", variant="success")
+                yield Button(label="Pause measurement", id="pause", variant="warning")
+                yield Button(label="Stop measurement", id="stop", variant="error")
+            yield Placeholder(name="Overview", id="Overview")
+        with HorizontalGroup(id="Info"):
+            yield Log(id="ConsoleLog", auto_scroll=True, max_lines=10)
+            with VerticalGroup(id="ProgressBars"):
                 yield MeasurementProgress(
-                    id="TotalProgress", total=(11 * 60), show_eta=False
-                )
-            with VerticalGroup():
+                        id="TotalProgress", total=(11 * 60), show_eta=False
+                    )
                 yield MeasurementProgress(
-                    id="CurrentProgress", total=(3 * 60), show_eta=False
-                )
+                        id="PositionProgress", total=(2 * 60), show_eta=False
+                    )
+                yield MeasurementProgress(
+                        id="IterationProgress", total=(2 * 60), show_eta=False
+                    )
+                yield MeasurementProgress(
+                        id="SweepProgress", total=(2 * 60), show_eta=False
+                    )
         yield Footer(id="Footer", show_command_palette=False)
-
-
-# class AutoSweepApp(App):
-#     CSS_PATH = "ui.tcss"
-#     BINDINGS = [
-#         Binding("q", "quit", "Quit the application", show=True, priority=True),
-#         Binding("s", "stop", "Stop the measurement", show=True, priority=True),
-#         Binding("p", "pause", "Pause the measurement", show=True, priority=True),
-#     ]
-
-#     def on_mount(self) -> None:
-#         self.title = "Automated Sweeps"
-#         self.sub_title = "Tool for automating REW measurements"
-#         self.push_screen(DefaultScreen())
-
-#     async def on_ready(self) -> None:
-#         # log = self.query_one("#Log", Log)
-#         # for _ in range(10):
-#         #     log.write_line("This is a log message.")
-#         #     await asyncio.sleep(1)
-#         ...
-
-
-# if __name__ == "__main__":
-#     app = AutoSweepApp()
-#     app.run()

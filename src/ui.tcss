@@ -1,40 +1,46 @@
 Screen {
+    Header {
+        height: 3;
+        dock: top;
+    }
+
+    #MainArea {
+        #Commands {
+            width: auto;
+            align: left middle;
+            Button {
+                width: 30;
+                margin: 1 0 1 1;
+            }
+        }
+        #Overview {
+            height: 16;
+            margin-left: 1;
+            width: 1fr;
+        }
+    }
+    #Info {
+        height: auto;
+        width: 1fr;
+        #ConsoleLog {
+            height: 8;        
+        }
+        #ProgressBars {
+            margin-left: 2;
+            width: 1fr;
+            #TotalProgress {
+            }
+            #PositionProgress {
+            }
+            #IterationProgress {
+            }
+            #SweepProgress {
+            }
+        }
+    }
+    Footer {
+        height: 1;
+        dock: bottom;
+    }
 }
 
-Header {
-    height: 3;
-    dock: top;
-}
-
-#Commands {
-    # column-span: 1;
-    # align: center middle;
-    dock: left;
-    width: 30;
-    padding-top: 3;
-}
-
-#Overview {
-    height: 15;
-}
-
-#Log {
-    height: auto;
-}
-
-# #bar {
-#     width: 1fr;
-# }
-VerticalGroup {
-    align: center middle;
-}
-
-#TotalProgress {
-}
-#CurrentProgress {
-}
-
-Footer {
-    height: 1;
-    dock: bottom;
-}
