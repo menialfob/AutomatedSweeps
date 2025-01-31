@@ -2,20 +2,20 @@ from audio import get_audio_files
 from measurement import run_measurements
 from rew_api import ensure_rew_api, ensure_rew_settings
 from utils import get_audio_channels, load_settings, save_settings
-from ui import DefaultScreen, CommandSelected, MeasurementProgress, Log
-from textual import log
+from ui import DefaultScreen, MeasurementProgress, Log, Button
 from textual.binding import Binding, BindingType
 from textual.app import App
 from textual.worker import Worker, get_current_worker
 
 class AutoSweepApp(App):
     CSS_PATH = "ui.tcss"
+
     BINDINGS: list[BindingType] = [
         Binding("q", "quit", "Quit the application", show=True, priority=True),
         Binding("s", "stop", "Stop the measurement", show=True, priority=True),
         Binding("p", "pause", "Pause the measurement", show=True, priority=True),
-        Binding("down", "focus_next", "Focus Next", show=False, priority=True),
-        Binding("up", "focus_previous", "Focus Previous", show=False, priority=True),
+        Binding("down", "focus_next", "Next button", show=True, priority=True),
+        Binding("up", "focus_previous", "Previous button", show=True, priority=True),
     ]
     async def on_mount(self) -> None:
         self.title = "Automated Sweeps"
@@ -26,28 +26,28 @@ class AutoSweepApp(App):
         self.progress = None
         self.main_console = None
 
-    def on_command_selected(self, message: CommandSelected) -> None:
+    # def on_command_selected(self, message: CommandSelected) -> None:
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle measurement commands selected from the UI."""
 
         self.progress = self.query_one("#TotalProgress", MeasurementProgress)
-        self.main_console = self.query_one("#ConsoleLog", Log)
-        
+        self.main_console = self.query_one("#ConsoleLog", Log) 
 
-        if message.command_id == "configure":
+        if event.button.id == "configure":
             self.main_console.write_line("Configuring measurement...")
 
-        elif message.command_id == "start":
+        elif event.button.id == "start":
             self.main_console.write_line("Starting measurement...")
             # progress.start()
 
             # Run measurement in a background worker
             self.run_worker(self.run_measurement, thread=True, exclusive=True)
 
-        elif message.command_id == "pause":
+        elif event.button.id == "pause":
             self.main_console.write_line("Pausing measurement...")
             self.progress.pause()
 
-        elif message.command_id == "stop":
+        elif event.button.id == "stop":
             self.main_console.write_line("Stopping measurement...")
             self.progress.stop()
 
@@ -62,7 +62,7 @@ class AutoSweepApp(App):
         # worker = get_current_worker()
         self.main_console.write_line("Running measurement...")
         self.progress.start()
-        main()
+        # main()
 
 
     def complete_measurement(self):

@@ -1,0 +1,502 @@
+Connected to devtools ( ws://127.0.0.1:8081 )
+---
+loop=<ProactorEventLoop running=True closed=False debug=False>
+features=frozenset({'devtools', 'debug'})
+Writing logs to 'C:\\Users\\jonas\\Development\\AutomatedSweeps\\textual.log'
+STARTED FileMonitor({WindowsPath('C:/Users/jonas/Development/AutomatedSweeps/src/ui.tcss')})
+Load() >>> AutoSweepApp(title='AutoSweepApp', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=None
+driver=<textual.drivers.web_driver.WebDriver object at 0x000002AEAE5F90F0>
+Compose() >>> AutoSweepApp(title='AutoSweepApp', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<App.on_compose>
+Resize(size=Size(width=212, height=49)) >>> AutoSweepApp(title='AutoSweepApp', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<App.on_resize>
+Mount() >>> AutoSweepApp(title='AutoSweepApp', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<AutoSweepApp.on_mount>
+DefaultScreen() is current (PUSHED)
+Compose() >>> Screen(id='_default') method=<Widget.on_compose>
+Compose() >>> DefaultScreen() method=<Widget.on_compose>
+Compose() >>> ToastRack(id='textual-toastrack') method=<Widget.on_compose>
+Mount() >>> ToastRack(id='textual-toastrack') method=<Widget.on_mount>
+Compose() >>> Tooltip(id='textual-tooltip') method=<Widget.on_compose>
+Mount() >>> Tooltip(id='textual-tooltip') method=<Widget.on_mount>
+Compose() >>> ToastRack(id='textual-toastrack') method=<Widget.on_compose>
+Mount() >>> ToastRack(id='textual-toastrack') method=<Widget.on_mount>
+Compose() >>> Tooltip(id='textual-tooltip') method=<Widget.on_compose>
+Mount() >>> Tooltip(id='textual-tooltip') method=<Widget.on_mount>
+Compose() >>> Header(id='Header') method=<Widget.on_compose>
+Compose() >>> HorizontalGroup(id='MainArea') method=<Widget.on_compose>
+Compose() >>> HorizontalGroup(id='Info') method=<Widget.on_compose>
+Compose() >>> Footer(id='Footer') method=<Widget.on_compose>
+Mount() >>> Footer(id='Footer') method=<Footer.on_mount>
+Mount() >>> Footer(id='Footer') method=<Widget.on_mount>
+Compose() >>> HeaderIcon() method=<Widget.on_compose>
+Mount() >>> HeaderIcon() method=<HeaderIcon.on_mount>
+Mount() >>> HeaderIcon() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of HeaderIcon()>)) >>> HeaderIcon() method=<MessagePump.on_callback>
+Compose() >>> HeaderTitle() method=<Widget.on_compose>
+Mount() >>> HeaderTitle() method=<Widget.on_mount>
+Compose() >>> HeaderClockSpace() method=<Widget.on_compose>
+Mount() >>> HeaderClockSpace() method=<Widget.on_mount>
+Compose() >>> VerticalGroup(id='Commands') method=<Widget.on_compose>
+Compose() >>> Placeholder(id='Overview', name='Overview') method=<Placeholder.on_compose>
+Compose() >>> Placeholder(id='Overview', name='Overview') method=<Widget.on_compose>
+Mount() >>> Placeholder(id='Overview', name='Overview') method=<Widget.on_mount>
+Compose() >>> Log(id='ConsoleLog') method=<Widget.on_compose>
+Mount() >>> Log(id='ConsoleLog') method=<ScrollView.on_mount>
+Mount() >>> Log(id='ConsoleLog') method=<Widget.on_mount>
+Compose() >>> VerticalGroup(id='ProgressBars') method=<Widget.on_compose>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Compose() >>> Button(id='configure') method=<Widget.on_compose>
+Mount() >>> Button(id='configure') method=<Widget.on_mount>
+Compose() >>> Button(id='start', variant='success') method=<Widget.on_compose>
+Mount() >>> Button(id='start', variant='success') method=<Widget.on_mount>
+Compose() >>> Button(id='pause', variant='warning') method=<Widget.on_compose>
+Mount() >>> Button(id='pause', variant='warning') method=<Widget.on_mount>
+Compose() >>> Button(id='stop', variant='error') method=<Widget.on_compose>
+Mount() >>> Button(id='stop', variant='error') method=<Widget.on_mount>
+Compose() >>> MeasurementProgress(id='TotalProgress') method=<Widget.on_compose>
+Compose() >>> MeasurementProgress(id='PositionProgress') method=<Widget.on_compose>
+Compose() >>> MeasurementProgress(id='IterationProgress') method=<Widget.on_compose>
+Compose() >>> MeasurementProgress(id='SweepProgress') method=<Widget.on_compose>
+Compose() >>> Bar(id='bar') method=<Widget.on_compose>
+Mount() >>> Bar(id='bar') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Compose() >>> PercentageStatus(id='percentage') method=<Widget.on_compose>
+Mount() >>> PercentageStatus(id='percentage') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of PercentageStatus(id='percentage')>)) >>> PercentageStatus(id='percentage') method=<MessagePump.on_callback>
+Compose() >>> Bar(id='bar') method=<Widget.on_compose>
+Mount() >>> Bar(id='bar') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Compose() >>> PercentageStatus(id='percentage') method=<Widget.on_compose>
+Mount() >>> PercentageStatus(id='percentage') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of PercentageStatus(id='percentage')>)) >>> PercentageStatus(id='percentage') method=<MessagePump.on_callback>
+Compose() >>> Bar(id='bar') method=<Widget.on_compose>
+Mount() >>> Bar(id='bar') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Compose() >>> PercentageStatus(id='percentage') method=<Widget.on_compose>
+Mount() >>> PercentageStatus(id='percentage') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of PercentageStatus(id='percentage')>)) >>> PercentageStatus(id='percentage') method=<MessagePump.on_callback>
+Compose() >>> Bar(id='bar') method=<Widget.on_compose>
+Mount() >>> Bar(id='bar') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of Bar(id='bar')>)) >>> Bar(id='bar') method=<MessagePump.on_callback>
+Compose() >>> PercentageStatus(id='percentage') method=<Widget.on_compose>
+Mount() >>> PercentageStatus(id='percentage') method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of PercentageStatus(id='percentage')>)) >>> PercentageStatus(id='percentage') method=<MessagePump.on_callback>
+Mount() >>> Screen(id='_default') method=<Screen.on_mount>
+Mount() >>> Screen(id='_default') method=<Widget.on_mount>
+ScreenResume() >>> Screen(id='_default') method=<Screen.on_screen_resume>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB03EBE20>, [])) >>> Screen(id='_default') method=<MessagePump.on_callback>
+ScreenSuspend() >>> Screen(id='_default') method=<Screen.on_screen_suspend>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0480700>, [ToastRack(id='textual-toastrack'), Tooltip(id='textual-tooltip')])) >>> Screen(id='_default') method=<MessagePump.on_callback>
+Update(ToastRack(id='textual-toastrack')) >>> Screen(id='_default') method=<Screen.on_update>
+Layout() >>> Screen(id='_default') method=<Screen.on_layout>
+Update(Tooltip(id='textual-tooltip')) >>> Screen(id='_default') method=<Screen.on_update>
+Resize(size=Size(width=212, height=49)) >>> Screen(id='_default') method=<Screen.on_resize>
+Show() >>> Screen(id='_default') method=<Widget.on_show>
+Mount() >>> Header(id='Header') method=<Header.on_mount>
+Mount() >>> Header(id='Header') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0482CB0>, [HeaderIcon(), HeaderTitle(), HeaderClockSpace()])) >>> Header(id='Header') method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0483C70>, [FooterKey(), FooterKey(), FooterKey()])) >>> Footer(id='Footer') method=<MessagePump.on_callback>
+Mount() >>> VerticalGroup(id='Commands') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0480310>, [Button(id='configure'), Button(id='start', variant='success'), Button(id='pause', variant='warning'), Button(id='stop', variant='error')])) >>> VerticalGroup(id='Commands') method=<MessagePump.on_callback>
+Mount() >>> MeasurementProgress(id='TotalProgress') method=<MeasurementProgress.on_mount>
+Mount() >>> MeasurementProgress(id='TotalProgress') method=<ProgressBar.on_mount>
+Mount() >>> MeasurementProgress(id='TotalProgress') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0561090>, [Bar(id='bar'), PercentageStatus(id='percentage')])) >>> MeasurementProgress(id='TotalProgress') method=<MessagePump.on_callback>
+Mount() >>> MeasurementProgress(id='PositionProgress') method=<MeasurementProgress.on_mount>
+Mount() >>> MeasurementProgress(id='PositionProgress') method=<ProgressBar.on_mount>
+Mount() >>> MeasurementProgress(id='PositionProgress') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB05617E0>, [Bar(id='bar'), PercentageStatus(id='percentage')])) >>> MeasurementProgress(id='PositionProgress') method=<MessagePump.on_callback>
+Mount() >>> MeasurementProgress(id='IterationProgress') method=<MeasurementProgress.on_mount>
+Mount() >>> MeasurementProgress(id='IterationProgress') method=<ProgressBar.on_mount>
+Mount() >>> MeasurementProgress(id='IterationProgress') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0561FC0>, [Bar(id='bar'), PercentageStatus(id='percentage')])) >>> MeasurementProgress(id='IterationProgress') method=<MessagePump.on_callback>
+Mount() >>> MeasurementProgress(id='SweepProgress') method=<MeasurementProgress.on_mount>
+Mount() >>> MeasurementProgress(id='SweepProgress') method=<ProgressBar.on_mount>
+Mount() >>> MeasurementProgress(id='SweepProgress') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0483760>, [Bar(id='bar'), PercentageStatus(id='percentage')])) >>> MeasurementProgress(id='SweepProgress') method=<MessagePump.on_callback>
+Mount() >>> HorizontalGroup(id='MainArea') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0482F80>, [VerticalGroup(id='Commands'), Placeholder(id='Overview', name='Overview')])) >>> HorizontalGroup(id='MainArea') method=<MessagePump.on_callback>
+Mount() >>> VerticalGroup(id='ProgressBars') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0560160>, [MeasurementProgress(id='TotalProgress'), MeasurementProgress(id='PositionProgress'), MeasurementProgress(id='IterationProgress'), MeasurementProgress(id='SweepProgress')])) >>> VerticalGroup(id='ProgressBars') method=<MessagePump.on_callback>
+Mount() >>> HorizontalGroup(id='Info') method=<Widget.on_mount>
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0483130>, [Log(id='ConsoleLog'), VerticalGroup(id='ProgressBars')])) >>> HorizontalGroup(id='Info') method=<MessagePump.on_callback>
+Mount() >>> DefaultScreen() method=<Screen.on_mount>
+Mount() >>> DefaultScreen() method=<Widget.on_mount>
+ScreenResume() >>> DefaultScreen() method=<Screen.on_screen_resume>
+Button(id='configure') was focused
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0481D80>, [ToastRack(id='textual-toastrack'), Tooltip(id='textual-tooltip'), Header(id='Header'), HorizontalGroup(id='MainArea'), HorizontalGroup(id='Info'), Footer(id='Footer')])) >>> DefaultScreen() method=<MessagePump.on_callback>
+Update(ToastRack(id='textual-toastrack')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Tooltip(id='textual-tooltip')) >>> DefaultScreen() method=<Screen.on_update>
+Update(HeaderIcon()) >>> DefaultScreen() method=<Screen.on_update>
+Update(Log(id='ConsoleLog')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(Button(id='configure')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Button(id='start', variant='success')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Button(id='pause', variant='warning')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Button(id='stop', variant='error')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Footer(id='Footer')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Update(Header(id='Header')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Footer(id='Footer')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(VerticalGroup(id='Commands')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='TotalProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='PositionProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='IterationProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='SweepProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='MainArea')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(VerticalGroup(id='ProgressBars')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='Info')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Callback(callback=functools.partial(<bound method Reactive._compute of <class 'textual.reactive.Reactive'>>, DefaultScreen())) >>> DefaultScreen() method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method Reactive._compute of <class 'textual.reactive.Reactive'>>, DefaultScreen())) >>> DefaultScreen() method=<MessagePump.on_callback>
+Resize(size=Size(width=212, height=49)) >>> DefaultScreen() method=<Screen.on_resize>
+Show() >>> DefaultScreen() method=<Widget.on_show>
+Callback(callback=functools.partial(<function Screen.set_focus.<locals>.scroll_to_center at 0x000002AEB03EB5B0>, Button(id='configure'))) >>> DefaultScreen() method=<MessagePump.on_callback>
+InvokeLater(callback=functools.partial(<bound method Screen.refresh_bindings of DefaultScreen()>)) >>> DefaultScreen() method=<MessagePump.on_invoke_later>
+Resize(size=Size(width=194, height=3)) >>> HeaderTitle() method=None
+Show() >>> HeaderTitle() method=<Widget.on_show>
+Resize(size=Size(width=212, height=1)) >>> Footer(id='Footer') method=None
+Compose() >>> ScrollBarCorner() method=<Widget.on_compose>
+Mount() >>> ScrollBarCorner() method=<Widget.on_mount>
+Resize(size=Size(width=2, height=1), virtual_size=Size(width=105, height=8), container_size=Size(width=105, height=8)) >>> ScrollBarCorner() method=None
+Show() >>> ScrollBarCorner() method=<Widget.on_show>
+Compose() >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=<Widget.on_compose>
+Mount() >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=<Widget.on_mount>
+Resize(size=Size(width=2, height=7), virtual_size=Size(width=105, height=8), container_size=Size(width=105, height=8)) >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=None
+Show() >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=<Widget.on_show>
+Compose() >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=<Widget.on_compose>
+Mount() >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=<Widget.on_mount>
+Resize(size=Size(width=103, height=1), virtual_size=Size(width=105, height=8), container_size=Size(width=105, height=8)) >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=None
+Show() >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=<Widget.on_show>
+Resize(size=Size(width=25, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+Prune() >>> FooterKey() method=<Widget.on_prune>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Resize(size=Size(width=24, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+Prune() >>> FooterKey() method=<Widget.on_prune>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Resize(size=Size(width=24, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+Prune() >>> FooterKey() method=<Widget.on_prune>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Resize(size=Size(width=10, height=3), container_size=Size(width=8, height=3)) >>> HeaderClockSpace() method=None
+Show() >>> HeaderClockSpace() method=<Widget.on_show>
+Resize(size=Size(width=8, height=3), container_size=Size(width=6, height=3)) >>> HeaderIcon() method=None
+Show() >>> HeaderIcon() method=<Widget.on_show>
+Resize(size=Size(width=212, height=3)) >>> Header(id='Header') method=None
+Show() >>> Header(id='Header') method=<Widget.on_show>
+Resize(size=Size(width=5, height=1)) >>> PercentageStatus(id='percentage') method=None
+Show() >>> PercentageStatus(id='percentage') method=<Widget.on_show>
+Resize(size=Size(width=32, height=1)) >>> Bar(id='bar') method=None
+Show() >>> Bar(id='bar') method=<Widget.on_show>
+Resize(size=Size(width=37, height=1)) >>> MeasurementProgress(id='SweepProgress') method=None
+Show() >>> MeasurementProgress(id='SweepProgress') method=<Widget.on_show>
+Resize(size=Size(width=5, height=1)) >>> PercentageStatus(id='percentage') method=None
+Show() >>> PercentageStatus(id='percentage') method=<Widget.on_show>
+Resize(size=Size(width=32, height=1)) >>> Bar(id='bar') method=None
+Show() >>> Bar(id='bar') method=<Widget.on_show>
+Resize(size=Size(width=37, height=1)) >>> MeasurementProgress(id='IterationProgress') method=None
+Show() >>> MeasurementProgress(id='IterationProgress') method=<Widget.on_show>
+Resize(size=Size(width=5, height=1)) >>> PercentageStatus(id='percentage') method=None
+Show() >>> PercentageStatus(id='percentage') method=<Widget.on_show>
+Resize(size=Size(width=32, height=1)) >>> Bar(id='bar') method=None
+Show() >>> Bar(id='bar') method=<Widget.on_show>
+Resize(size=Size(width=37, height=1)) >>> MeasurementProgress(id='PositionProgress') method=None
+Show() >>> MeasurementProgress(id='PositionProgress') method=<Widget.on_show>
+Resize(size=Size(width=5, height=1)) >>> PercentageStatus(id='percentage') method=None
+Show() >>> PercentageStatus(id='percentage') method=<Widget.on_show>
+Resize(size=Size(width=32, height=1)) >>> Bar(id='bar') method=None
+Show() >>> Bar(id='bar') method=<Widget.on_show>
+Resize(size=Size(width=37, height=1)) >>> MeasurementProgress(id='TotalProgress') method=None
+Show() >>> MeasurementProgress(id='TotalProgress') method=<Widget.on_show>
+Resize(size=Size(width=105, height=4)) >>> VerticalGroup(id='ProgressBars') method=None
+Show() >>> VerticalGroup(id='ProgressBars') method=<Widget.on_show>
+Resize(size=Size(width=105, height=8), virtual_size=Size(width=103, height=7)) >>> Log(id='ConsoleLog') method=None
+Show() >>> Log(id='ConsoleLog') method=<Widget.on_show>
+Resize(size=Size(width=212, height=8)) >>> HorizontalGroup(id='Info') method=None
+Show() >>> HorizontalGroup(id='Info') method=<Widget.on_show>
+Resize(size=Size(width=180, height=16)) >>> Placeholder(id='Overview', name='Overview') method=<Placeholder.on_resize>
+Show() >>> Placeholder(id='Overview', name='Overview') method=<Widget.on_show>
+Resize(size=Size(width=30, height=3), container_size=Size(width=30, height=1)) >>> Button(id='stop', variant='error') method=None
+Show() >>> Button(id='stop', variant='error') method=<Widget.on_show>
+Resize(size=Size(width=30, height=3), container_size=Size(width=30, height=1)) >>> Button(id='pause', variant='warning') method=None
+Show() >>> Button(id='pause', variant='warning') method=<Widget.on_show>
+Resize(size=Size(width=30, height=3), container_size=Size(width=30, height=1)) >>> Button(id='start', variant='success') method=None
+Show() >>> Button(id='start', variant='success') method=<Widget.on_show>
+Resize(size=Size(width=30, height=3), container_size=Size(width=30, height=1)) >>> Button(id='configure') method=None
+Show() >>> Button(id='configure') method=<Widget.on_show>
+Focus() >>> Button(id='configure') method=<Widget.on_focus>
+Resize(size=Size(width=31, height=17)) >>> VerticalGroup(id='Commands') method=None
+Show() >>> VerticalGroup(id='Commands') method=<Widget.on_show>
+DescendantFocus(widget=Button(id='configure')) >>> VerticalGroup(id='Commands') method=None
+Resize(size=Size(width=212, height=17)) >>> HorizontalGroup(id='MainArea') method=None
+Show() >>> HorizontalGroup(id='MainArea') method=<Widget.on_show>
+DescendantFocus(widget=Button(id='configure')) >>> HorizontalGroup(id='MainArea') method=None
+Update(HeaderTitle()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBarCorner()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2)) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0)) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HeaderClockSpace()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HeaderIcon()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Header(id='Header')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='SweepProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='IterationProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='PositionProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='TotalProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(VerticalGroup(id='ProgressBars')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='Info')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Placeholder(id='Overview', name='Overview')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='stop', variant='error')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='pause', variant='warning')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='start', variant='success')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='configure')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='configure')) >>> DefaultScreen() method=<Screen.on_update>
+Update(VerticalGroup(id='Commands')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='MainArea')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+DescendantFocus(widget=Button(id='configure')) >>> DefaultScreen() method=None
+Show() >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=<Widget.on_show>
+Show() >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=<Widget.on_show>
+ready in 800 milliseconds
+Callback(callback=functools.partial(<bound method MessagePump.post_message of AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'})>, AppBlur())) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<MessagePump.on_callback>
+Compose() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_compose>
+Mount() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_mount>
+Compose() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_compose>
+Mount() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_mount>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Compose() >>> FooterKey() method=<Widget.on_compose>
+Mount() >>> FooterKey() method=<Widget.on_mount>
+Callback(callback=functools.partial(<bound method DOMNode._initialize_data_bind of FooterKey()>)) >>> FooterKey() method=<MessagePump.on_callback>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='SweepProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='IterationProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='PositionProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(PercentageStatus(id='percentage')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Bar(id='bar')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(MeasurementProgress(id='TotalProgress')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(VerticalGroup(id='ProgressBars')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Log(id='ConsoleLog')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='Info')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Placeholder(id='Overview', name='Overview')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='stop', variant='error')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='pause', variant='warning')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='start', variant='success')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Button(id='configure')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(VerticalGroup(id='Commands')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HorizontalGroup(id='MainArea')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HeaderClockSpace()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HeaderTitle()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(HeaderIcon()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Header(id='Header')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(Tooltip(id='textual-tooltip')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ToastRack(id='textual-toastrack')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2)) >>> DefaultScreen() method=<Screen.on_update>
+Update(ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0)) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2)) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(ScrollBarCorner()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Update(Tooltip(id='textual-tooltip')) >>> Screen(id='_default') method=<Screen.on_update>
+Layout() >>> Screen(id='_default') method=<Screen.on_layout>
+Update(ToastRack(id='textual-toastrack')) >>> Screen(id='_default') method=<Screen.on_update>
+Layout() >>> Screen(id='_default') method=<Screen.on_layout>
+Update(ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2)) >>> Screen(id='_default') method=<Screen.on_update>
+Resize(size=Size(width=212, height=49)) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<App.on_resize>
+Callback(callback=functools.partial(<bound method ToastRack.show of ToastRack(id='textual-toastrack')>, <textual.notifications.Notifications object at 0x000002AEAE5C1210>)) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<MessagePump.on_callback>
+Ready() >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<AutoSweepApp.on_ready>
+Callback(callback=functools.partial(<bound method ToastRack.show of ToastRack(id='textual-toastrack')>, <textual.notifications.Notifications object at 0x000002AEAE5C1210>)) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<MessagePump.on_callback>
+DescendantFocus(widget=Button(id='configure')) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=None
+AppBlur() >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'focus', 'dark'}) method=<App.on_app_blur>
+focus was removed
+Callback(callback=functools.partial(<bound method Reactive._compute of <class 'textual.reactive.Reactive'>>, AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}))) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}) method=<MessagePump.on_callback>
+Callback(callback=functools.partial(<bound method Reactive._compute of <class 'textual.reactive.Reactive'>>, AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}))) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}) method=<MessagePump.on_callback>
+Blur() >>> Button(id='configure') method=<Widget.on_blur>
+InvokeLater(callback=functools.partial(<bound method Screen.refresh_bindings of DefaultScreen()>)) >>> DefaultScreen() method=<MessagePump.on_invoke_later>
+Resize(size=Size(width=212, height=49)) >>> DefaultScreen() method=<Screen.on_resize>
+Update(HeaderTitle()) >>> DefaultScreen() method=<Screen.on_update>
+Update(ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0)) >>> DefaultScreen() method=<Screen.on_update>
+Update(ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2)) >>> DefaultScreen() method=<Screen.on_update>
+Update(Button(id='configure')) >>> DefaultScreen() method=<Screen.on_update>
+Resize(size=Size(width=212, height=49)) >>> Screen(id='_default') method=<Screen.on_resize>
+Show() >>> Footer(id='Footer') method=<Widget.on_show>
+DescendantBlur(widget=Button(id='configure')) >>> VerticalGroup(id='Commands') method=None
+Resize(size=Size(width=25, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+Resize(size=Size(width=24, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+Resize(size=Size(width=24, height=1)) >>> FooterKey() method=None
+Show() >>> FooterKey() method=<Widget.on_show>
+DescendantBlur(widget=Button(id='configure')) >>> HorizontalGroup(id='MainArea') method=None
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Update(FooterKey()) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+DescendantBlur(widget=Button(id='configure')) >>> DefaultScreen() method=None
+DescendantBlur(widget=Button(id='configure')) >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}) method=None
+Callback(callback=functools.partial(<function Widget.mount.<locals>.update_styles at 0x000002AEB0560940>, [FooterKey(), FooterKey(), FooterKey()])) >>> Footer(id='Footer') method=<MessagePump.on_callback>
+Update(Footer(id='Footer')) >>> DefaultScreen() method=<Screen.on_update>
+Layout() >>> DefaultScreen() method=<Screen.on_layout>
+Unmount() >>> Button(id='pause', variant='warning') method=<Widget.on_unmount>
+Unmount() >>> Bar(id='bar') method=<Widget.on_unmount>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Unmount() >>> Button(id='stop', variant='error') method=<Widget.on_unmount>
+Unmount() >>> Bar(id='bar') method=<Widget.on_unmount>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Unmount() >>> FooterKey() method=<Widget.on_unmount>
+Unmount() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_unmount>
+Unmount() >>> PercentageStatus(id='percentage') method=<Widget.on_unmount>
+Unmount() >>> ScrollBar(name='vertical', window_virtual_size=100, window_size=0, position=0, thickness=2) method=<Widget.on_unmount>
+Unmount() >>> ScrollBar(name='horizontal', window_virtual_size=0, window_size=103, position=0) method=<Widget.on_unmount>
+Unmount() >>> PercentageStatus(id='percentage') method=<Widget.on_unmount>
+Unmount() >>> HeaderIcon() method=<Widget.on_unmount>
+Unmount() >>> PercentageStatus(id='percentage') method=<Widget.on_unmount>
+Unmount() >>> HeaderTitle() method=<Widget.on_unmount>
+Unmount() >>> Tooltip(id='textual-tooltip') method=<Widget.on_unmount>
+Unmount() >>> HeaderClockSpace() method=<Widget.on_unmount>
+Unmount() >>> ToastRack(id='textual-toastrack') method=<Widget.on_unmount>
+Unmount() >>> Footer(id='Footer') method=<Footer.on_unmount>
+Unmount() >>> Footer(id='Footer') method=<Widget.on_unmount>
+Unmount() >>> Bar(id='bar') method=<Widget.on_unmount>
+Unmount() >>> Button(id='configure') method=<Widget.on_unmount>
+Unmount() >>> Bar(id='bar') method=<Widget.on_unmount>
+Unmount() >>> ScrollBar(name='vertical', window_virtual_size=0, window_size=7, position=0, thickness=2) method=<Widget.on_unmount>
+Unmount() >>> Placeholder(id='Overview', name='Overview') method=<Widget.on_unmount>
+Unmount() >>> Button(id='start', variant='success') method=<Widget.on_unmount>
+Unmount() >>> Tooltip(id='textual-tooltip') method=<Widget.on_unmount>
+Unmount() >>> PercentageStatus(id='percentage') method=<Widget.on_unmount>
+Unmount() >>> ScrollBarCorner() method=<Widget.on_unmount>
+Unmount() >>> ToastRack(id='textual-toastrack') method=<Widget.on_unmount>
+Unmount() >>> Header(id='Header') method=<Widget.on_unmount>
+Unmount() >>> VerticalGroup(id='Commands') method=<Widget.on_unmount>
+Unmount() >>> Log(id='ConsoleLog') method=<Widget.on_unmount>
+Unmount() >>> Screen(id='_default') method=<Widget.on_unmount>
+Unmount() >>> HorizontalGroup(id='MainArea') method=<Widget.on_unmount>
+Unmount() >>> MeasurementProgress(id='TotalProgress') method=<Widget.on_unmount>
+Unmount() >>> MeasurementProgress(id='PositionProgress') method=<Widget.on_unmount>
+Unmount() >>> MeasurementProgress(id='SweepProgress') method=<Widget.on_unmount>
+Unmount() >>> MeasurementProgress(id='IterationProgress') method=<Widget.on_unmount>
+Unmount() >>> VerticalGroup(id='ProgressBars') method=<Widget.on_unmount>
+Unmount() >>> HorizontalGroup(id='Info') method=<Widget.on_unmount>
+Unmount() >>> DefaultScreen() method=<Widget.on_unmount>
+Unmount() >>> AutoSweepApp(title='Automated Sweeps', classes={'-dark-mode'}, pseudo_classes={'dark', 'blur'}) method=None

@@ -8,7 +8,7 @@ from textual.widgets import (
     Log,
     Button,
 )
-from textual.containers import VerticalGroup, HorizontalGroup, VerticalScroll
+from textual.containers import VerticalGroup, HorizontalGroup
 from textual.message import Message
 
 class MeasurementProgressUpdate(Message):
@@ -16,12 +16,6 @@ class MeasurementProgressUpdate(Message):
 
     def __init__(self, progress: float):
         self.progress = progress  # A float between 0 and 1
-        super().__init__()
-
-# A custom event that main.py can handle
-class CommandSelected(Message):
-    def __init__(self, command_id: str):
-        self.command_id = command_id
         super().__init__()
 
 class MeasurementProgress(ProgressBar):
