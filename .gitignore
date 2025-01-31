@@ -1,5 +1,4 @@
 build/
 dist/
 settings.json
-*.spec
 __pycache__/
