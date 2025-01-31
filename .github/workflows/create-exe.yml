@@ -2,11 +2,8 @@ name: Package exe with PyInstaller - Windows
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the $default-branch branch
+  # Triggers the workflow on push
   push:
-    branches: [ $default-branch ]
-  pull_request:
-    branches: [ $default-branch ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,16 +12,14 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Package Application
-      uses: JackMcKew/pyinstaller-action-windows@main
+    - uses: setup-python@v5
       with:
-        path: package
-
+        python-version: '3.11'
+    - run: pip install -r requirements.txt pyinstaller
+    - run: pyinstaller --clean --onefile --icon assets/AutomatedSweeps.ico -y -n  "AutomatedSweeps" --add-data "assets;assets" --add-data "src/ui.tcss:." src/main.py
     - uses: actions/upload-artifact@v4
       with:
-        name: AutomatedSweeps
-        path: package/dist/windows # or path/to/artifact
+        path: dist/*
