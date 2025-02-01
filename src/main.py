@@ -2,7 +2,7 @@ from audio import get_audio_files
 from measurement import run_measurements
 from rew_api import ensure_rew_api, ensure_rew_settings
 from utils import get_audio_channels, load_settings, save_settings
-from ui import DefaultScreen, MeasurementProgress, Log, Button
+from ui import DefaultScreen, MeasurementProgress, Log, Button, Label
 from textual.binding import Binding, BindingType
 from textual.app import App
 from textual.worker import Worker, get_current_worker
@@ -23,33 +23,58 @@ class AutoSweepApp(App):
         self.push_screen(DefaultScreen())
         self.theme = "nord"
 
-        self.progress = None
+        self.total_progress = None
+        self.position_progress = None
+        self.iteration_progress = None
+        self.sweep_progress = None
         self.main_console = None
 
     # def on_command_selected(self, message: CommandSelected) -> None:
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle measurement commands selected from the UI."""
 
-        self.progress = self.query_one("#TotalProgress", MeasurementProgress)
+        self.total_progress = self.query_one("#TotalProgress", MeasurementProgress)
+        self.channel_progress = self.query_one("#ChannelProgress", MeasurementProgress)
+        self.iteration_progress = self.query_one("#IterationProgress", MeasurementProgress)
+        self.sweep_progress = self.query_one("#SweepProgress", MeasurementProgress)
+        self.total_label = self.query_one("#TotalLabel", Label)
+        self.channel_label = self.query_one("#ChannelLabel", Label)
+        self.iteration_label = self.query_one("#IterationLabel", Label)
         self.main_console = self.query_one("#ConsoleLog", Log) 
 
         if event.button.id == "configure":
+            global channels, iterations, totalprogress
+            channels = 11
+            iterations = 2
+            totalprogress = channels * iterations
+
+
             self.main_console.write_line("Configuring measurement...")
+            self.total_progress.update(total=totalprogress)
+            self.channel_progress.update(total=channels)
+            self.total_label.update(f"Total Progress ({totalprogress})")
+            self.channel_label.update(f"Channel Progress ({channels})")
+            self.iteration_label.update(f"Iteration Progress ({iterations})")
+            self.iteration_progress.update(total=iterations)
+
 
         elif event.button.id == "start":
             self.main_console.write_line("Starting measurement...")
             # progress.start()
-
+            self.total_progress.advance(1)
+            self.channel_progress.advance(1)
+            self.iteration_progress.advance(1)
+            
             # Run measurement in a background worker
             self.run_worker(self.run_measurement, thread=True, exclusive=True)
 
         elif event.button.id == "pause":
             self.main_console.write_line("Pausing measurement...")
-            self.progress.pause()
+            self.total_progress.pause()
 
         elif event.button.id == "stop":
             self.main_console.write_line("Stopping measurement...")
-            self.progress.stop()
+            self.total_progress.stop()
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Handles worker completion and updates the UI."""
@@ -61,14 +86,12 @@ class AutoSweepApp(App):
         """Runs the measurement process in a worker thread."""
         # worker = get_current_worker()
         self.main_console.write_line("Running measurement...")
-        self.progress.start()
         # main()
 
 
     def complete_measurement(self):
         """Handles completion of the measurement process."""
         self.main_console.write_line("Measurement completed!")
-        self.progress.stop()
 
     async def on_ready(self) -> None:
         # log = self.query_one("#Log", Log)

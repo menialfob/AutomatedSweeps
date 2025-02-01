@@ -7,6 +7,7 @@ from textual.widgets import (
     ProgressBar,
     Log,
     Button,
+    Label,
 )
 from textual.containers import VerticalGroup, HorizontalGroup
 from textual.message import Message
@@ -23,9 +24,9 @@ class MeasurementProgress(ProgressBar):
 
     def on_mount(self) -> None:
         """Event handler for when the widget is mounted."""
-        self.update_progress_bar = self.set_interval(
-            1 / 60, self.update_progress, pause=True
-        )
+        # self.update_progress_bar = self.set_interval(
+        #     1 / 60, self.update_progress, pause=True
+        # )
 
     def update_progress(self, steps: float | None = 1) -> None:
         """Update the progress bar value."""
@@ -33,15 +34,15 @@ class MeasurementProgress(ProgressBar):
 
     def start(self) -> None:
         """Start the progress bar."""
-        self.update_progress_bar.resume()
+        # self.update_progress_bar.resume()
 
     def pause(self) -> None:
         """Pause the progress bar."""
-        self.update_progress_bar.pause()
+        # self.update_progress_bar.pause()
 
     def stop(self) -> None:
         """Stop the progress bar."""
-        self.update_progress_bar.pause()
+        # self.update_progress_bar.pause()
         self.update(progress=0)
 
 
@@ -58,16 +59,20 @@ class DefaultScreen(Screen):
         with HorizontalGroup(id="Info"):
             yield Log(id="ConsoleLog", auto_scroll=True, max_lines=10)
             with VerticalGroup(id="ProgressBars"):
+                yield Label("Total Progress", id="TotalLabel")
                 yield MeasurementProgress(
-                        id="TotalProgress", total=(11 * 60), show_eta=False
+                        id="TotalProgress", total=(11 * 60), show_eta=False, name="Total Progress"
                     )
+                yield Label("Channel Progress", id="ChannelLabel")
                 yield MeasurementProgress(
-                        id="PositionProgress", total=(2 * 60), show_eta=False
+                        id="ChannelProgress", total=(2 * 60), show_eta=False, name="Channel Progress"
                     )
+                yield Label("Iteration Progress", id="IterationLabel")
                 yield MeasurementProgress(
-                        id="IterationProgress", total=(2 * 60), show_eta=False
+                        id="IterationProgress", total=(2 * 60), show_eta=False, name="Iteration Progress"
                     )
+                yield Label("Sweep Progress", id="SweepLabel")
                 yield MeasurementProgress(
-                        id="SweepProgress", total=(2 * 60), show_eta=False
+                        id="SweepProgress", total=(2 * 60), show_eta=False, name="Sweep Progress"
                     )
         yield Footer(id="Footer", show_command_palette=False)

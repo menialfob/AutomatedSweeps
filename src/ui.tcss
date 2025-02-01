@@ -30,7 +30,7 @@ Screen {
             width: 1fr;
             #TotalProgress {
             }
-            #PositionProgress {
+            #ChannelProgress {
             }
             #IterationProgress {
             }
