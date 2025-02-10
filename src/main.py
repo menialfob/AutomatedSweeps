@@ -107,6 +107,7 @@ class AutoSweepApp(App):
             # Update or create the mapping in config.channel_mapping
             config.channel_mapping[original_channel] = new_mapping
             log.info(f"Mapping updated: {original_channel} -> {new_mapping}")
+            log.debug(config.channel_mapping)
         else:
             log.warning("Either original channel or new mapping is missing.")
 

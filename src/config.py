@@ -75,20 +75,7 @@ ALL_CHANNEL_NAMES = {
     "TS": "Top Surround (Auro-3D)",
 }
 
-selected_channels: list = [
-    "BDL",
-    "BDR",
-    "C",
-    "CH",
-    "FDL",
-    "FDR",
-    "FHL",
-    "FHR",
-    "FL",
-    "FR",
-    "FWL",
-    "FWR",
-]
+selected_channels: list = []
 
 channel_mapping: dict = {}
 

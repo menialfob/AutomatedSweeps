@@ -203,9 +203,6 @@ class ConfigScreen(Screen):
                 yield Button(label="Back", id="back", variant="default")
                 yield Button(label="Save settings", id="save", variant="default")
             yield ChannelSelector(id="ChannelSelectGroup")
-            # with HorizontalGroup(id="ConfigInfo"):
             yield ChannelList(id="ChannelGroup")
             yield AudioList(id="AudioGroup")
-        # with HorizontalGroup(id="Info"):
-        #     yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
         yield Footer(id="Footer", show_command_palette=False)
