@@ -57,6 +57,7 @@ Screen {
     #ConfigMainArea {
         layout: grid;
         grid-size: 2;
+        # grid-rows: 75% 25%;
         #Commands {
             dock: left;
             width: auto;
@@ -71,42 +72,46 @@ Screen {
         }
         #ChannelSelectGroup {
             column-span: 2;
-            height: auto;
             #ChannelOptionsLabel {
                 padding: 1 0 1 1;
                 width: 1fr;
                 content-align: center middle;
             }
             #ChannelOptionsList {
-                height: 33;
+                height: 1fr;
+                margin-bottom: 2;
             }
             # padding-bottom: 1;
         }
-        #ConfigInfo {
-            align: center middle;
-            column-span: 2;
-            margin-top: 3;
-            #ChannelGroup {
-                #ChannelLabel {
-                    padding-left: 1;
-                    width: 1fr;
-                    content-align: center middle;
-                }
-                #ChannelOptionsList {
-                    width: 1fr;
-                }
+        # #ConfigInfo {
+        #     align: center middle;
+        #     column-span: 2;
+        #     # margin-top: 3;
+        #ChannelGroup {
+            column-span: 1;
+            #ChannelLabel {
+                padding-left: 1;
+                width: 1fr;
+                content-align: center middle;
             }
-            #AudioGroup {
-                #AudioLabel {
-                    padding-left: 1;
-                    width: 1fr;
-                    content-align: center middle;
-                }
-                #AudioOptionsList {
-                    width: 1fr;
-                }
+            #ChannelOptionsList {
+                width: 1fr;
+                height: auto;
             }
         }
+        #AudioGroup {
+            column-span: 1;
+            #AudioLabel {
+                padding-left: 1;
+                width: 1fr;
+                content-align: center middle;
+            }
+            #AudioOptionsList {
+                width: 1fr;
+                height: auto;
+            }
+        }
+        # }
         #back {
             width: 1fr;
             # margin: 1 1 1 1;

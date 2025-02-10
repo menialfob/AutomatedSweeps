@@ -20,9 +20,11 @@ from ui import (
     RadioSet,
     RadioButton,
     SelectionList,
+    ChannelList,
+    AudioList,
 )
 from utils import get_audio_channels, get_ip, load_settings, save_settings
-from config import channel_mapping
+import config
 from textual import log
 
 
@@ -47,10 +49,34 @@ class AutoSweepApp(App):
         self.sweep_progress = None
         self.main_console = None
         self.serve_url = None
+        self.channels_list = None
+        self.audio_list = None
 
         self.selected_channel = None
 
     # def on_command_selected(self, message: CommandSelected) -> None:
+
+    def on_selection_list_selected_changed(
+        self, message: SelectionList.SelectedChanged
+    ) -> None:
+        """Handle the selected option in the channel list."""
+
+        config.selected_channels.clear()
+
+        for item in message.selection_list.selected:
+            config.selected_channels.extend(item.split("/"))
+
+        # selected = message.selection_list.SelectedChanged.split('/')
+
+        log.debug(f"Selected options: {config.selected_channels}")
+
+        self.channels_list = self.query_one(ChannelList)
+        self.channels_list.mutate_reactive(ChannelList.channels)
+        self.audio_list = self.query_one(AudioList)
+        self.audio_list.mutate_reactive(AudioList.channels)
+
+        # self.selected_channel = message.selected.id
+        # log.debug(f"Selected option: {message.selected.id}")
 
     def on_option_list_option_highlighted(
         self, message: OptionList.OptionSelected
@@ -60,7 +86,7 @@ class AutoSweepApp(App):
         self.selected_channel = message.option_id
 
         # Check if a mapping exists for the option_id
-        mapped_option = channel_mapping.get(message.option_id, message.option_id)
+        mapped_option = config.channel_mapping.get(message.option_id, message.option_id)
 
         log.debug(
             f"Highlighted option: {message.option_id} (Mapped to: {mapped_option})"
@@ -70,23 +96,6 @@ class AutoSweepApp(App):
         self.radio_button = self.query_one(f"#{mapped_option}", RadioButton)
         self.radio_button.value = True
 
-    def on_selection_list_selected_changed(
-        self, message: SelectionList.SelectedChanged
-    ) -> None:
-        """Handle the selected option in the channel list."""
-
-        global selected_channels
-        selected_channels = []
-
-        for item in message.selection_list.selected:
-            selected_channels.extend(item.split("/"))
-
-        # selected = message.selection_list.SelectedChanged.split('/')
-        log.debug(selected_channels)
-
-        # self.selected_channel = message.selected.id
-        # log.debug(f"Selected option: {message.selected.id}")
-
     def on_radio_set_changed(self, message: RadioSet.Changed) -> None:
         """Handle changes in the selected radio button (new channel mapping)."""
         log.debug(f"Radio button changed: {message.pressed.id}")
@@ -95,8 +104,8 @@ class AutoSweepApp(App):
 
         # Ensure both variables are valid
         if original_channel and new_mapping:
-            # Update or create the mapping in CHANNEL_MAPPING
-            channel_mapping[original_channel] = new_mapping
+            # Update or create the mapping in config.channel_mapping
+            config.channel_mapping[original_channel] = new_mapping
             log.info(f"Mapping updated: {original_channel} -> {new_mapping}")
         else:
             log.warning("Either original channel or new mapping is missing.")

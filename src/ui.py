@@ -4,6 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup
 from textual.message import Message
 from textual.screen import Screen
+from textual.reactive import reactive
 from textual.widgets import (
     Button,
     Footer,
@@ -19,11 +20,12 @@ from textual.widgets import (
     SelectionList,
 )
 from textual.binding import Binding, BindingType
+from textual import log
 
 from textual.widgets.option_list import Option
 from textual.widgets.selection_list import Selection
 
-from config import DEFAULT_CHANNELS, ALL_CHANNEL_NAMES, PAIR_CHANNEL_NAMES
+import config
 
 
 class ChannelSelector(VerticalGroup):
@@ -31,11 +33,11 @@ class ChannelSelector(VerticalGroup):
 
     channel_options: list = [
         Selection(
-            prompt=f"{ch} ({PAIR_CHANNEL_NAMES[ch]})",
-            value=PAIR_CHANNEL_NAMES[ch],
-            id=PAIR_CHANNEL_NAMES[ch],
+            prompt=f"{ch} ({config.PAIR_CHANNEL_NAMES[ch]})",
+            value=config.PAIR_CHANNEL_NAMES[ch],
+            id=config.PAIR_CHANNEL_NAMES[ch],
         )
-        for ch in PAIR_CHANNEL_NAMES
+        for ch in config.PAIR_CHANNEL_NAMES
     ]
 
     def compose(self) -> ComposeResult:
@@ -46,12 +48,14 @@ class ChannelSelector(VerticalGroup):
 class ChannelList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channel_options: list = [
-        Option(prompt=f"{ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-        for ch in DEFAULT_CHANNELS
-    ]
+    channels = reactive(config.selected_channels, recompose=True, layout=True)
 
     def compose(self) -> ComposeResult:
+        self.channel_options: list = [
+            Option(prompt=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
+            for ch in self.channels
+        ]
+        log.debug(config.selected_channels)
         yield Label("When measuring...", id="ChannelLabel")
         yield OptionList(*self.channel_options, id="ChannelOptionsList")
 
@@ -59,12 +63,15 @@ class ChannelList(VerticalGroup):
 class AudioList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    audio_buttons: list = [
-        RadioButton(label=f"{ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-        for ch in DEFAULT_CHANNELS
-    ]
+    channels = reactive(config.selected_channels, recompose=True, layout=True)
 
     def compose(self) -> ComposeResult:
+        log.debug(config.selected_channels)
+
+        self.audio_buttons: list = [
+            RadioButton(label=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
+            for ch in self.channels
+        ]
         yield Label("...then play this audio file", id="AudioLabel")
         yield RadioSet(*self.audio_buttons, id="AudioOptionsList")
 
@@ -196,9 +203,9 @@ class ConfigScreen(Screen):
                 yield Button(label="Back", id="back", variant="default")
                 yield Button(label="Save settings", id="save", variant="default")
             yield ChannelSelector(id="ChannelSelectGroup")
-            with HorizontalGroup(id="ConfigInfo"):
-                yield ChannelList(id="ChannelGroup")
-                yield AudioList(id="AudioGroup")
-        with HorizontalGroup(id="Info"):
-            yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
+            # with HorizontalGroup(id="ConfigInfo"):
+            yield ChannelList(id="ChannelGroup")
+            yield AudioList(id="AudioGroup")
+        # with HorizontalGroup(id="Info"):
+        #     yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
         yield Footer(id="Footer", show_command_palette=False)
