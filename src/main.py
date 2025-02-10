@@ -49,8 +49,10 @@ class AutoSweepApp(App):
         self.sweep_progress = None
         self.main_console = None
         self.serve_url = None
+        self.channels_overview = None
         self.channels_list = None
         self.audio_list = None
+        self.save_button = None
 
         self.selected_channel = None
 
@@ -64,7 +66,8 @@ class AutoSweepApp(App):
         config.selected_channels.clear()
 
         for item in message.selection_list.selected:
-            config.selected_channels.extend(item.split("/"))
+            for ch in item.split("/"):
+                config.selected_channels[ch] = ch
 
         # selected = message.selection_list.SelectedChanged.split('/')
 
@@ -75,9 +78,6 @@ class AutoSweepApp(App):
         self.audio_list = self.query_one(AudioList)
         self.audio_list.mutate_reactive(AudioList.channels)
 
-        # self.selected_channel = message.selected.id
-        # log.debug(f"Selected option: {message.selected.id}")
-
     def on_option_list_option_highlighted(
         self, message: OptionList.OptionSelected
     ) -> None:
@@ -86,7 +86,9 @@ class AutoSweepApp(App):
         self.selected_channel = message.option_id
 
         # Check if a mapping exists for the option_id
-        mapped_option = config.channel_mapping.get(message.option_id, message.option_id)
+        mapped_option = config.selected_channels.get(
+            message.option_id, message.option_id
+        )
 
         log.debug(
             f"Highlighted option: {message.option_id} (Mapped to: {mapped_option})"
@@ -98,16 +100,14 @@ class AutoSweepApp(App):
 
     def on_radio_set_changed(self, message: RadioSet.Changed) -> None:
         """Handle changes in the selected radio button (new channel mapping)."""
-        log.debug(f"Radio button changed: {message.pressed.id}")
         original_channel = self.selected_channel  # The channel the user is mapping from
         new_mapping = message.pressed.id  # The channel the user selected as the mapping
 
         # Ensure both variables are valid
         if original_channel and new_mapping:
             # Update or create the mapping in config.channel_mapping
-            config.channel_mapping[original_channel] = new_mapping
-            log.info(f"Mapping updated: {original_channel} -> {new_mapping}")
-            log.debug(config.channel_mapping)
+            config.selected_channels[original_channel] = new_mapping
+            log.debug(f"Mapping updated: {original_channel} -> {new_mapping}")
         else:
             log.warning("Either original channel or new mapping is missing.")
 
@@ -116,6 +116,7 @@ class AutoSweepApp(App):
 
         if event.button.id == "configure":
             await self.push_screen("ConfigScreen")
+
             # global channels, iterations, totalprogress
             # channels = 11
             # iterations = 2
@@ -135,6 +136,13 @@ class AutoSweepApp(App):
             # self.total_label.update(f"Total Progress ({totalprogress})")
             # self.iteration_label.update(f"Iteration Progress ({iterations})")
             # self.iteration_progress.update(total=iterations)
+
+        elif event.button.id == "load":
+            self.settings = load_settings()
+            if self.settings:
+                config.selected_channels = self.settings
+                log.debug(f"Loaded settings: {config.selected_channels}")
+            log.info("No settings file found.")
 
         elif event.button.id == "start":
             self.total_progress = self.query_one("#TotalProgress", MeasurementProgress)
@@ -168,6 +176,9 @@ class AutoSweepApp(App):
         elif event.button.id == "quit":
             self.main_console.write("Stopping server...")
             await self.action_quit()
+
+        elif event.button.id == "save":
+            save_settings(config.selected_channels)
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Handles worker completion and updates the UI."""

@@ -31,16 +31,19 @@ import config
 class ChannelSelector(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channel_options: list = [
-        Selection(
-            prompt=f"{ch} ({config.PAIR_CHANNEL_NAMES[ch]})",
-            value=config.PAIR_CHANNEL_NAMES[ch],
-            id=config.PAIR_CHANNEL_NAMES[ch],
-        )
-        for ch in config.PAIR_CHANNEL_NAMES
-    ]
-
     def compose(self) -> ComposeResult:
+        self.channel_options: list = [
+            Selection(
+                prompt=f"{ch} ({config.PAIR_CHANNEL_NAMES[ch]})",
+                value=config.PAIR_CHANNEL_NAMES[ch],
+                id=config.PAIR_CHANNEL_NAMES[ch],
+                initial_state=any(
+                    channel in config.PAIR_CHANNEL_NAMES[ch]
+                    for channel in config.selected_channels.keys()
+                ),
+            )
+            for ch in config.PAIR_CHANNEL_NAMES
+        ]
         yield Label("Channels to measure", id="ChannelOptionsLabel")
         yield SelectionList[str](*self.channel_options, id="ChannelOptionsList")
 
@@ -48,14 +51,25 @@ class ChannelSelector(VerticalGroup):
 class ChannelList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channels = reactive(config.selected_channels, recompose=True, layout=True)
+    channels = reactive(
+        config.selected_channels, recompose=True, layout=True, repaint=True
+    )
+
+    def on_show(self) -> None:
+        self.channels = config.selected_channels.copy()
+        self.refresh()
+        log.debug(f"ChannelList mounted with {self.channels}")
+
+    def watch_channels(self, channels) -> None:
+        log.debug(f"ChannelList watched with {channels}")
 
     def compose(self) -> ComposeResult:
+        log.debug(f"ChannelList composed with {self.channels}")
+        log.debug(f"ChannelList got reactive from {config.selected_channels}")
         self.channel_options: list = [
             Option(prompt=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-            for ch in self.channels
+            for ch in self.channels.keys()
         ]
-        log.debug(config.selected_channels)
         yield Label("When measuring...", id="ChannelLabel")
         yield OptionList(*self.channel_options, id="ChannelOptionsList")
 
@@ -63,14 +77,18 @@ class ChannelList(VerticalGroup):
 class AudioList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channels = reactive(config.selected_channels, recompose=True, layout=True)
+    channels = reactive(
+        config.selected_channels, recompose=True, layout=True, repaint=True
+    )
+
+    def on_show(self) -> None:
+        self.channels = config.selected_channels.copy()
+        self.refresh()
 
     def compose(self) -> ComposeResult:
-        log.debug(config.selected_channels)
-
         self.audio_buttons: list = [
             RadioButton(label=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-            for ch in self.channels
+            for ch in self.channels.keys()
         ]
         yield Label("...then play this audio file", id="AudioLabel")
         yield RadioSet(*self.audio_buttons, id="AudioOptionsList")
@@ -126,14 +144,13 @@ class DefaultScreen(Screen):
         yield Header(id="Header")
         with HorizontalGroup(id="MainArea"):
             with VerticalGroup(id="Commands"):
+                yield Button(label="Setup", id="configure", variant="default")
                 yield Button(label="Start measurement", id="start", variant="success")
                 # yield Button(label="Pause measurement", id="pause", variant="warning")
                 yield Button(
-                    label="Channel mapping config", id="configure", variant="default"
-                )
-                yield Button(
                     label="Stop measurement", id="stop", variant="error", disabled=True
                 )
+                yield Button(label="Load settings", id="load", variant="default")
                 if "--serve" not in sys.argv:
                     yield Button(label="Serve remotely", id="serve", variant="default")
             yield Placeholder(name="Overview", id="Overview")
@@ -196,6 +213,8 @@ class ConfigScreen(Screen):
         ),
     ]
 
+    channels = reactive(config.selected_channels, recompose=True, layout=True)
+
     def compose(self) -> ComposeResult:
         yield Header(id="Header")
         with HorizontalGroup(id="ConfigMainArea"):
@@ -203,6 +222,6 @@ class ConfigScreen(Screen):
                 yield Button(label="Back", id="back", variant="default")
                 yield Button(label="Save settings", id="save", variant="default")
             yield ChannelSelector(id="ChannelSelectGroup")
-            yield ChannelList(id="ChannelGroup")
-            yield AudioList(id="AudioGroup")
+            yield ChannelList(id="ChannelGroup").data_bind(ConfigScreen.channels)
+            yield AudioList(id="AudioGroup").data_bind(ConfigScreen.channels)
         yield Footer(id="Footer", show_command_palette=False)

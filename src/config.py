@@ -75,9 +75,7 @@ ALL_CHANNEL_NAMES = {
     "TS": "Top Surround (Auro-3D)",
 }
 
-selected_channels: list = []
-
-channel_mapping: dict = {}
+selected_channels: dict[str] = {}
 
 # REW endpoints
 WARNING_ENDPOINT = "http://localhost:4735/application/warnings"

@@ -5,9 +5,8 @@ import socket
 from config import SETTINGS_FILE
 
 
-def save_settings(path, channels):
+def save_settings(settings):
     """Save user settings to a JSON file."""
-    settings = {"audio_path": path, "channels": list(channels)}
     with open(SETTINGS_FILE, "w") as f:
         json.dump(settings, f)
     print("Settings saved successfully.")
