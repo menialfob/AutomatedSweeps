@@ -14,6 +14,45 @@ DEFAULT_CHANNELS = [
     "SW2",
 ]
 
+ALL_CHANNELS = [
+    "FL",
+    "FR",
+    "C",
+    "SLA",
+    "SRA",
+    "SBL",
+    "SBR",
+    "SB",
+    "FHL",
+    "FHR",
+    "FWL",
+    "FWR",
+    "TFL",
+    "TFR",
+    "TML",
+    "TMR",
+    "TRL",
+    "TRR",
+    "RHL",
+    "RHR",
+    "FDL",
+    "FDR",
+    "SDL",
+    "SDR",
+    "BDL",
+    "BDR",
+    "SHL",
+    "SHR",
+    "TS",
+    "CH",
+    "SW1",
+    "SW2",
+    "SW3",
+    "SW4",
+]
+
+channel_mapping: dict = {}
+
 # REW endpoints
 WARNING_ENDPOINT = "http://localhost:4735/application/warnings"
 ERROR_ENDPOINT = "http://localhost:4735/application/errors"

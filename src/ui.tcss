@@ -4,6 +4,10 @@ Screen {
         dock: top;
     }
 
+    Footer {
+        height: 1;
+        dock: bottom;
+    }
     #MainArea {
         #Commands {
             width: auto;
@@ -38,9 +42,43 @@ Screen {
             }
         }
     }
-    Footer {
-        height: 1;
-        dock: bottom;
+    #ServeMainArea {
+        #ServeInfo {
+            align: center middle;
+            height: 15;
+            background:rgb(45, 82, 53);
+            width: 4fr;
+        }
+        #quit {
+            width: 1fr;
+            # margin: 1 1 1 1;
+        }
     }
+    #ConfigMainArea {
+        #ConfigInfo {
+            align: center middle;
+            width: 4fr;
+            #ChannelGroup {
+                #ChannelLabel {
+                }
+                #ChannelOptionsList {
+                    width: 1fr;
+                }
+            }
+            #AudioGroup {
+                #AudioLabel {
+                }
+                #AudioOptionsList {
+                    width: 1fr;
+                }
+            }
+        }
+        #back {
+            width: 1fr;
+            # margin: 1 1 1 1;
+        }
+    }
+
+
 }
 
