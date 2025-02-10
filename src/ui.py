@@ -16,31 +16,56 @@ from textual.widgets import (
     RichLog,
     RadioSet,
     RadioButton,
+    SelectionList,
 )
 from textual.binding import Binding, BindingType
 
 from textual.widgets.option_list import Option
+from textual.widgets.selection_list import Selection
 
-from config import DEFAULT_CHANNELS
+from config import DEFAULT_CHANNELS, ALL_CHANNEL_NAMES, PAIR_CHANNEL_NAMES
+
+
+class ChannelSelector(VerticalGroup):
+    """A radio set widget for selecting audio channels."""
+
+    channel_options: list = [
+        Selection(
+            prompt=f"{ch} ({PAIR_CHANNEL_NAMES[ch]})",
+            value=PAIR_CHANNEL_NAMES[ch],
+            id=PAIR_CHANNEL_NAMES[ch],
+        )
+        for ch in PAIR_CHANNEL_NAMES
+    ]
+
+    def compose(self) -> ComposeResult:
+        yield Label("Channels to measure", id="ChannelOptionsLabel")
+        yield SelectionList[str](*self.channel_options, id="ChannelOptionsList")
 
 
 class ChannelList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channel_options: list = [Option(ch, id=ch) for ch in DEFAULT_CHANNELS]
+    channel_options: list = [
+        Option(prompt=f"{ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
+        for ch in DEFAULT_CHANNELS
+    ]
 
     def compose(self) -> ComposeResult:
-        yield Label("Channels", id="ChannelLabel")
+        yield Label("When measuring...", id="ChannelLabel")
         yield OptionList(*self.channel_options, id="ChannelOptionsList")
 
 
 class AudioList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    audio_buttons: list = [RadioButton(ch, id=ch) for ch in DEFAULT_CHANNELS]
+    audio_buttons: list = [
+        RadioButton(label=f"{ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
+        for ch in DEFAULT_CHANNELS
+    ]
 
     def compose(self) -> ComposeResult:
-        yield Label("Audio files", id="AudioLabel")
+        yield Label("...then play this audio file", id="AudioLabel")
         yield RadioSet(*self.audio_buttons, id="AudioOptionsList")
 
 
@@ -169,6 +194,8 @@ class ConfigScreen(Screen):
         with HorizontalGroup(id="ConfigMainArea"):
             with VerticalGroup(id="Commands"):
                 yield Button(label="Back", id="back", variant="default")
+                yield Button(label="Save settings", id="save", variant="default")
+            yield ChannelSelector(id="ChannelSelectGroup")
             with HorizontalGroup(id="ConfigInfo"):
                 yield ChannelList(id="ChannelGroup")
                 yield AudioList(id="AudioGroup")

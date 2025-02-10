@@ -55,11 +55,42 @@ Screen {
         }
     }
     #ConfigMainArea {
+        layout: grid;
+        grid-size: 2;
+        #Commands {
+            dock: left;
+            width: auto;
+            #back {
+                width: 30;
+                margin: 3 0 1 1;
+            }
+            #save {
+                width: 30;
+                margin: 1 0 0 1;
+            }
+        }
+        #ChannelSelectGroup {
+            column-span: 2;
+            height: auto;
+            #ChannelOptionsLabel {
+                padding: 1 0 1 1;
+                width: 1fr;
+                content-align: center middle;
+            }
+            #ChannelOptionsList {
+                height: 33;
+            }
+            # padding-bottom: 1;
+        }
         #ConfigInfo {
             align: center middle;
-            width: 4fr;
+            column-span: 2;
+            margin-top: 3;
             #ChannelGroup {
                 #ChannelLabel {
+                    padding-left: 1;
+                    width: 1fr;
+                    content-align: center middle;
                 }
                 #ChannelOptionsList {
                     width: 1fr;
@@ -67,6 +98,9 @@ Screen {
             }
             #AudioGroup {
                 #AudioLabel {
+                    padding-left: 1;
+                    width: 1fr;
+                    content-align: center middle;
                 }
                 #AudioOptionsList {
                     width: 1fr;

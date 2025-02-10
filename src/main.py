@@ -19,6 +19,7 @@ from ui import (
     OptionList,
     RadioSet,
     RadioButton,
+    SelectionList,
 )
 from utils import get_audio_channels, get_ip, load_settings, save_settings
 from config import channel_mapping
@@ -68,6 +69,23 @@ class AutoSweepApp(App):
         # Use the mapped option_id to select the corresponding radio button
         self.radio_button = self.query_one(f"#{mapped_option}", RadioButton)
         self.radio_button.value = True
+
+    def on_selection_list_selected_changed(
+        self, message: SelectionList.SelectedChanged
+    ) -> None:
+        """Handle the selected option in the channel list."""
+
+        global selected_channels
+        selected_channels = []
+
+        for item in message.selection_list.selected:
+            selected_channels.extend(item.split("/"))
+
+        # selected = message.selection_list.SelectedChanged.split('/')
+        log.debug(selected_channels)
+
+        # self.selected_channel = message.selected.id
+        # log.debug(f"Selected option: {message.selected.id}")
 
     def on_radio_set_changed(self, message: RadioSet.Changed) -> None:
         """Handle changes in the selected radio button (new channel mapping)."""
@@ -126,7 +144,7 @@ class AutoSweepApp(App):
             self.total_progress.stop()
 
         elif event.button.id == "back":
-            await self.push_screen("DefaultScreen")
+            await self.pop_screen()
 
         elif event.button.id == "serve":
             self.main_console = self.query_one("#ConsoleLog", RichLog)
