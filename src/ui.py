@@ -46,19 +46,40 @@ class MeasurementSchedule(Static):
         self.table.add_column("Channel", no_wrap=True)
         self.table.add_column("Audio played", no_wrap=True)
         self.table.add_column("Iteration", no_wrap=True)
+        self.table.add_column("Position", no_wrap=True)
         self.table.add_column("Status", no_wrap=True)
 
         log.debug(f"initial table: {self.table}")
 
-        if config.measure_ref_position:
-            log.debug(
-                f"Adding reference position step since measure_ref_position is {config.measure_ref_position}"
+        if config.measure_mic_position:
+            self.table.add_row(
+                f"#{self.step_count}",
+                "Measure FL Distance",
+                "FL",
+                "FL",
+                "Utility",
+                "Reference",
+                "Not started",
             )
+            self.step_count += 1
+
+            self.table.add_row(
+                f"#{self.step_count}",
+                "Measure FR Distance",
+                "FR",
+                "FR",
+                "Utility",
+                "Reference",
+                "Not started",
+            )
+            self.step_count += 1
+
             self.table.add_row(
                 f"#{self.step_count}",
                 "Check microphone position",
                 "----",
                 "---",
+                "Utility",
                 "Reference",
                 "Not started",
             )
@@ -71,8 +92,11 @@ class MeasurementSchedule(Static):
                     "Measure sweep",
                     channel,
                     mapping["audio"],
-                    "Reference" if config.measure_ref_position and i == 0 else f"{i}",
-                    "Not started",
+                    "Reference"
+                    if config.measure_position_name == "Reference" and i == 0
+                    else f"{i}",
+                    config.measure_position_name,
+                    mapping["status"],
                 )
                 self.step_count += 1
         self.update(self.table)
@@ -190,14 +214,14 @@ class DefaultScreen(Screen):
                             yield Switch(id="lossless", value=True)
                         with VerticalGroup(id="ReferenceSwitch", classes="SetupField"):
                             yield Label(
-                                "Measure reference position",
+                                "Center microphone",
                                 id="ReferenceLabel",
                                 variant="primary",
                             )
                             yield Static(
-                                "Measure the reference position first (recommended)"
+                                "Measure the microphone center position as a reference"
                             )
-                            yield Switch(id="reference", value=True)
+                            yield Switch(id="centering", value=True)
                     with HorizontalGroup(classes="SetupRow"):
                         with VerticalGroup(id="Iterations", classes="SetupField"):
                             yield Label(
@@ -205,7 +229,9 @@ class DefaultScreen(Screen):
                                 id="IterationsLabel",
                                 variant="primary",
                             )
-                            yield Static("Number of measurements")
+                            yield Static(
+                                "Input the number of measurements that you want to perform at the current position"
+                            )
                             yield Input(
                                 id="iterations",
                                 value="1",
@@ -214,43 +240,23 @@ class DefaultScreen(Screen):
                             )
                         with VerticalGroup(id="Positions", classes="SetupField"):
                             yield Label(
-                                "Number of positions",
+                                "Position name",
                                 id="PositionsLabel",
                                 variant="primary",
                             )
-                            yield Static("Number of positions to measure")
+                            yield Static(
+                                "Enter 'Reference' for measuring main listening position, or a custom name for other positions"
+                            )
                             yield Input(
-                                id="positions",
-                                value="1",
-                                placeholder="1 to 99",
-                                type="integer",
+                                id="position",
+                                value="Reference",
+                                placeholder="Position name or 'Reference' for MLP",
+                                type="text",
                             )
                 with VerticalScroll(id="ScheduleArea"):
                     yield MeasurementSchedule(id="MeasurementSchedule")
         with HorizontalGroup(id="Info"):
-            yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
-            with VerticalGroup(id="ProgressBars"):
-                yield Label("Total Progress", id="TotalLabel")
-                yield MeasurementProgress(
-                    id="TotalProgress",
-                    total=(11 * 60),
-                    show_eta=False,
-                    name="Total Progress",
-                )
-                yield Label("Iteration Progress", id="IterationLabel")
-                yield MeasurementProgress(
-                    id="IterationProgress",
-                    total=(2 * 60),
-                    show_eta=False,
-                    name="Iteration Progress",
-                )
-                yield Label("Sweep Progress", id="SweepLabel")
-                yield MeasurementProgress(
-                    id="SweepProgress",
-                    total=(2 * 60),
-                    show_eta=False,
-                    name="Sweep Progress",
-                )
+            yield RichLog(id="ConsoleLog", auto_scroll=True, markup=True, wrap=True)
         yield Footer(id="Footer", show_command_palette=False)
 
 

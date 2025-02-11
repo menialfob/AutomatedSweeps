@@ -13,7 +13,6 @@ from ui import (
     ConfigScreen,
     DefaultScreen,
     Link,
-    MeasurementProgress,
     RichLog,
     ServeScreen,
     OptionList,
@@ -45,21 +44,32 @@ class AutoSweepApp(App):
     async def on_mount(self) -> None:
         self.title = "Automated Sweeps"
         self.sub_title = "Tool for automating REW measurements"
-        self.push_screen(DefaultScreen())
+        await self.push_screen(DefaultScreen())
         self.theme = "nord"
 
-        self.total_progress = None
-        self.position_progress = None
-        self.iteration_progress = None
-        self.sweep_progress = None
-        self.main_console = None
-        self.serve_url = None
-        self.channels_overview = None
-        self.channels_list = None
-        self.audio_list = None
-        self.save_button = None
-
         self.selected_channel = None
+
+        # Update measurement schedule
+        self.measurement_schedule = self.query_one(
+            "#MeasurementSchedule", MeasurementSchedule
+        )
+        self.measurement_schedule.populate_table()
+
+        # Write welcome message
+        self.main_console = self.query_one("#ConsoleLog", RichLog)
+        self.main_console.write("[green]Welcome to Automated Sweeps![/green]")
+        self.main_console.write(
+            "This program uses a combination of APIs and screen interaction to automate sweep measurements as much as possible. It is designed to be used in conjunction with ObsessiveCompulsiveAudiophile's A1 Neuron Room Audio Optimization script."
+        )
+        self.main_console.write(
+            "Start by going to setup and configure your measurement setup or use Load settings to load a previous configuration."
+        )
+        self.main_console.write(
+            "It is important that you have the following settings: 1) REW open on your main monitor with the 'Measure' button visible. 2) Set REW measurement sweep file. 3) Select 'Use as entered' and deselect 'Prefix with output'"
+        )
+        self.main_console.write(
+            "[italic]Note that the position name 'Reference' carries a special significance and should be used for your first measurements of the Main Listening Position (MLP) / reference position.[/italic]"
+        )
 
     def on_selection_list_selected_changed(
         self, message: SelectionList.SelectedChanged
@@ -69,8 +79,9 @@ class AutoSweepApp(App):
         config.selected_channels.clear()
 
         for item in message.selection_list.selected:
+            log.debug(f"Selected option: {item}")
             for ch in item.split("/"):
-                config.selected_channels[ch]["audio"] = ch
+                config.selected_channels[ch] = {"audio": ch, "status": "Not started"}
 
         # Sort config.selected_channels according to the order in ALL_CHANNEL_NAMES
         sorted_selected_channels = OrderedDict(
@@ -130,32 +141,24 @@ class AutoSweepApp(App):
         if event.switch.id == "lossless":
             config.lossless_audio = event.switch.value
 
-        elif event.switch.id == "reference":
-            config.measure_ref_position = self.switch_value
+        elif event.switch.id == "centering":
+            config.measure_mic_position = self.switch_value
 
         # Update measurement schedule
-        self.measurement_schedule = self.query_one(
-            "#MeasurementSchedule", MeasurementSchedule
-        )
         self.measurement_schedule.populate_table()
-        # self.measurement_schedule.refresh(recompose=True)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Handle changes in the input field."""
         log.debug(f"Input submitted: {event.input.id} -> {event.input.value}")
 
         if event.input.id == "position":
-            config.measure_positions = int(event.input.value)
+            config.measure_position_name = event.input.value
 
         elif event.input.id == "iterations":
             config.measure_iterations = int(event.input.value)
 
         # Update measurement schedule
-        self.measurement_schedule = self.query_one(
-            "#MeasurementSchedule", MeasurementSchedule
-        )
         self.measurement_schedule.populate_table()
-        # self.measurement_schedule.refresh(recompose=True)
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle measurement commands selected from the UI."""
@@ -171,53 +174,27 @@ class AutoSweepApp(App):
             self.audio_list = self.query_one(AudioList)
             self.audio_list.refresh(recompose=True)
 
-            # global channels, iterations, totalprogress
-            # channels = 11
-            # iterations = 2
-            # totalprogress = channels * iterations
-
-            # self.total_progress = self.query_one("#TotalProgress", MeasurementProgress)
-            # self.iteration_progress = self.query_one(
-            #     "#IterationProgress", MeasurementProgress
-            # )
-            # self.sweep_progress = self.query_one("#SweepProgress", MeasurementProgress)
-            # self.total_label = self.query_one("#TotalLabel", Label)
-            # self.iteration_label = self.query_one("#IterationLabel", Label)
-            # self.main_console = self.query_one("#ConsoleLog", RichLog)
-
-            # self.main_console.write("Configuring measurement...")
-            # self.total_progress.update(total=totalprogress)
-            # self.total_label.update(f"Total Progress ({totalprogress})")
-            # self.iteration_label.update(f"Iteration Progress ({iterations})")
-            # self.iteration_progress.update(total=iterations)
-
         elif event.button.id == "load":
             self.settings = load_settings()
             if self.settings:
                 config.selected_channels = self.settings
                 log.debug(f"Loaded settings: {config.selected_channels}")
-                self.measurement_schedule = self.query_one(
-                    "#MeasurementSchedule", MeasurementSchedule
-                )
+
+                # Update measurement schedule
                 self.measurement_schedule.populate_table()
             log.info("No settings file found.")
 
         elif event.button.id == "start":
-            self.total_progress = self.query_one("#TotalProgress", MeasurementProgress)
-            self.main_console = self.query_one("#ConsoleLog", RichLog)
             self.main_console.write("Starting measurement...")
-            self.total_progress.advance(1)
 
             # Run measurement in a background worker
             self.run_worker(self.run_measurement, thread=True, exclusive=True)
 
         elif event.button.id == "pause":
             self.main_console.write("Pausing measurement...")
-            self.total_progress.pause()
 
         elif event.button.id == "stop":
             self.main_console.write("Stopping measurement...")
-            self.total_progress.stop()
 
         elif event.button.id == "back":
             await self.pop_screen()

@@ -66,19 +66,24 @@ ALL_CHANNEL_NAMES = {
 
 
 # Global variables
-def nested_dict() -> defaultdict:
-    return defaultdict(nested_dict)
+def default_channel_config():
+    return {"audio": None, "status": None}
 
 
-selected_channels: defaultdict = nested_dict()
+selected_channels = defaultdict(default_channel_config)
+# def nested_dict() -> defaultdict:
+#     return defaultdict(nested_dict)
+
+
+# selected_channels: defaultdict = nested_dict()
 
 lossless_audio: bool = True
 
-measure_ref_position: bool = True
+measure_mic_position: bool = True
 
-measure_iterations = 1
+measure_iterations: int = 1
 
-measure_positions = 1
+measure_position_name: str = "Reference"
 
 # REW endpoints
 WARNING_ENDPOINT = "http://localhost:4735/application/warnings"
