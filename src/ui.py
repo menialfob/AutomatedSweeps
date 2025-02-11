@@ -12,19 +12,58 @@ from textual.widgets import (
     Label,
     Link,
     OptionList,
-    Placeholder,
     ProgressBar,
     RichLog,
     RadioSet,
     RadioButton,
     SelectionList,
+    Static,
 )
+
+from rich.table import Table
 from textual.binding import Binding, BindingType
 
 from textual.widgets.option_list import Option
 from textual.widgets.selection_list import Selection
 
 import config
+
+
+class MeasurementSchedule(Static):
+    """A list of measurement steps."""
+
+    table = Table(title="Measurement Schedule")
+    step_count = 1
+
+    def populate_table(self) -> None:
+        """Populate the table with the measurement steps."""
+        self.table.add_row(
+            f"#{self.step_count}",
+            "Check microphone position",
+            "----",
+            "---",
+            "Reference",
+        )
+        self.step_count += 1
+
+        for channel, audio in config.selected_channels.items():
+            self.table.add_row(
+                f"#{self.step_count}",
+                "Measure sweep",
+                channel,
+                audio,
+                "Reference",
+            )
+            self.step_count += 1
+        self.update(self.table)
+
+    def on_mount(self) -> None:
+        self.table.add_column("Step", justify="right", style="cyan", no_wrap=True)
+        self.table.add_column("Description")
+        self.table.add_column("Channel")
+        self.table.add_column("Audio played")
+        self.table.add_column("Iteration")
+        self.update(self.table)
 
 
 class ChannelSelector(VerticalGroup):
@@ -132,7 +171,8 @@ class DefaultScreen(Screen):
                 yield Button(label="Load settings", id="load", variant="default")
                 if "--serve" not in sys.argv:
                     yield Button(label="Serve remotely", id="serve", variant="default")
-            yield Placeholder(name="Overview", id="Overview")
+            with VerticalGroup(name="Overview", id="Overview"):
+                yield MeasurementSchedule(id="MeasurementSchedule")
         with HorizontalGroup(id="Info"):
             yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
             with VerticalGroup(id="ProgressBars"):

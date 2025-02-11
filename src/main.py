@@ -23,6 +23,7 @@ from ui import (
     ChannelList,
     AudioList,
     ChannelSelector,
+    MeasurementSchedule,
 )
 from utils import get_audio_channels, get_ip, load_settings, save_settings
 import config
@@ -159,6 +160,10 @@ class AutoSweepApp(App):
             if self.settings:
                 config.selected_channels = self.settings
                 log.debug(f"Loaded settings: {config.selected_channels}")
+                self.measurement_schedule = self.query_one(
+                    "#MeasurementSchedule", MeasurementSchedule
+                )
+                self.measurement_schedule.populate_table()
             log.info("No settings file found.")
 
         elif event.button.id == "start":
