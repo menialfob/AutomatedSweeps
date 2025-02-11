@@ -24,6 +24,8 @@ from ui import (
     AudioList,
     ChannelSelector,
     MeasurementSchedule,
+    Switch,
+    Input,
 )
 from utils import get_audio_channels, get_ip, load_settings, save_settings
 import config
@@ -68,7 +70,7 @@ class AutoSweepApp(App):
 
         for item in message.selection_list.selected:
             for ch in item.split("/"):
-                config.selected_channels[ch] = ch
+                config.selected_channels[ch]["audio"] = ch
 
         # Sort config.selected_channels according to the order in ALL_CHANNEL_NAMES
         sorted_selected_channels = OrderedDict(
@@ -96,9 +98,7 @@ class AutoSweepApp(App):
         self.selected_channel = message.option_id
 
         # Check if a mapping exists for the option_id
-        mapped_option = config.selected_channels.get(
-            message.option_id, message.option_id
-        )
+        mapped_option = config.selected_channels[message.option_id]["audio"]
 
         log.debug(
             f"Highlighted option: {message.option_id} (Mapped to: {mapped_option})"
@@ -116,10 +116,46 @@ class AutoSweepApp(App):
         # Ensure both variables are valid
         if original_channel and new_mapping:
             # Update or create the mapping in config.channel_mapping
-            config.selected_channels[original_channel] = new_mapping
+            config.selected_channels[original_channel]["audio"] = new_mapping
             log.debug(f"Mapping updated: {original_channel} -> {new_mapping}")
         else:
             log.warning("Either original channel or new mapping is missing.")
+
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Handle changes in the switch."""
+        log.debug(f"Switch changed: {event.switch.id} -> {event.switch.value}")
+
+        self.switch_value = event.switch.value
+
+        if event.switch.id == "lossless":
+            config.lossless_audio = event.switch.value
+
+        elif event.switch.id == "reference":
+            config.measure_ref_position = self.switch_value
+
+        # Update measurement schedule
+        self.measurement_schedule = self.query_one(
+            "#MeasurementSchedule", MeasurementSchedule
+        )
+        self.measurement_schedule.populate_table()
+        # self.measurement_schedule.refresh(recompose=True)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        """Handle changes in the input field."""
+        log.debug(f"Input submitted: {event.input.id} -> {event.input.value}")
+
+        if event.input.id == "position":
+            config.measure_positions = int(event.input.value)
+
+        elif event.input.id == "iterations":
+            config.measure_iterations = int(event.input.value)
+
+        # Update measurement schedule
+        self.measurement_schedule = self.query_one(
+            "#MeasurementSchedule", MeasurementSchedule
+        )
+        self.measurement_schedule.populate_table()
+        # self.measurement_schedule.refresh(recompose=True)
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle measurement commands selected from the UI."""
@@ -185,6 +221,10 @@ class AutoSweepApp(App):
 
         elif event.button.id == "back":
             await self.pop_screen()
+            self.measurement_schedule = self.query_one(
+                "#MeasurementSchedule", MeasurementSchedule
+            )
+            self.measurement_schedule.populate_table()
 
         elif event.button.id == "serve":
             self.main_console = self.query_one("#ConsoleLog", RichLog)

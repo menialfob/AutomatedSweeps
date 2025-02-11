@@ -18,10 +18,29 @@ Screen {
             }
         }
         #Overview {
-            height: 16;
-            margin-left: 1;
-            width: 1fr;
+            .SetupRow {
+                width: 100%;
+                height: auto;
+            }
+            #Selections {
+                .SetupField {
+                    border: solid $accent;
+                }
+                width: 1fr;
+                VerticalGroup {
+                    margin-left: 1;
+                }
+            }
+            #ScheduleArea {
+                margin: 1 0 1 1;
+                height: 18;
+                #MeasurementSchedule {
+                    height: auto;
+                    width: 1fr;
+                }
+            }
         }
+
     }
     #Info {
         height: auto;

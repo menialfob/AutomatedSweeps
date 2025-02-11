@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 # Constants
 SETTINGS_FILE = "settings.json"
 
@@ -62,7 +64,21 @@ ALL_CHANNEL_NAMES = {
     "SW4": "Subwoofer 4",
 }
 
-selected_channels: dict[str] = {}
+
+# Global variables
+def nested_dict() -> defaultdict:
+    return defaultdict(nested_dict)
+
+
+selected_channels: defaultdict = nested_dict()
+
+lossless_audio: bool = True
+
+measure_ref_position: bool = True
+
+measure_iterations = 1
+
+measure_positions = 1
 
 # REW endpoints
 WARNING_ENDPOINT = "http://localhost:4735/application/warnings"

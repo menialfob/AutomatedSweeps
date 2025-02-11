@@ -1,7 +1,7 @@
 import sys
 
 from textual.app import ComposeResult
-from textual.containers import HorizontalGroup, VerticalGroup
+from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll
 from textual.message import Message
 from textual.screen import Screen
 from textual.reactive import reactive
@@ -18,7 +18,11 @@ from textual.widgets import (
     RadioButton,
     SelectionList,
     Static,
+    Switch,
+    Input,
 )
+
+from textual import log
 
 from rich.table import Table
 from textual.binding import Binding, BindingType
@@ -32,38 +36,47 @@ import config
 class MeasurementSchedule(Static):
     """A list of measurement steps."""
 
-    table = Table(title="Measurement Schedule")
-    step_count = 1
-
     def populate_table(self) -> None:
         """Populate the table with the measurement steps."""
-        self.table.add_row(
-            f"#{self.step_count}",
-            "Check microphone position",
-            "----",
-            "---",
-            "Reference",
-        )
-        self.step_count += 1
+        self.table = None
+        self.table = Table(title="Measurement Schedule", expand=True)
+        self.step_count = 1
+        self.table.add_column("Step", no_wrap=True)
+        self.table.add_column("Description", style="cyan", no_wrap=True)
+        self.table.add_column("Channel", no_wrap=True)
+        self.table.add_column("Audio played", no_wrap=True)
+        self.table.add_column("Iteration", no_wrap=True)
+        self.table.add_column("Status", no_wrap=True)
 
-        for channel, audio in config.selected_channels.items():
+        log.debug(f"initial table: {self.table}")
+
+        if config.measure_ref_position:
+            log.debug(
+                f"Adding reference position step since measure_ref_position is {config.measure_ref_position}"
+            )
             self.table.add_row(
                 f"#{self.step_count}",
-                "Measure sweep",
-                channel,
-                audio,
+                "Check microphone position",
+                "----",
+                "---",
                 "Reference",
+                "Not started",
             )
             self.step_count += 1
-        self.update(self.table)
 
-    def on_mount(self) -> None:
-        self.table.add_column("Step", justify="right", style="cyan", no_wrap=True)
-        self.table.add_column("Description")
-        self.table.add_column("Channel")
-        self.table.add_column("Audio played")
-        self.table.add_column("Iteration")
+        for i in range(config.measure_iterations):
+            for channel, mapping in config.selected_channels.items():
+                self.table.add_row(
+                    f"#{self.step_count}",
+                    "Measure sweep",
+                    channel,
+                    mapping["audio"],
+                    "Reference" if config.measure_ref_position and i == 0 else f"{i}",
+                    "Not started",
+                )
+                self.step_count += 1
         self.update(self.table)
+        log.debug(f"self.table: {self.table}")
 
 
 class ChannelSelector(VerticalGroup):
@@ -90,8 +103,6 @@ class ChannelList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
     def compose(self) -> ComposeResult:
-        # log.debug(f"ChannelList composed with {self.channels}")
-        # log.debug(f"ChannelList got reactive from {config.selected_channels}")
         self.channel_options: list = [
             Option(prompt=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
             for ch in config.selected_channels.keys()
@@ -125,9 +136,6 @@ class MeasurementProgress(ProgressBar):
 
     def on_mount(self) -> None:
         """Event handler for when the widget is mounted."""
-        # self.update_progress_bar = self.set_interval(
-        #     1 / 60, self.update_progress, pause=True
-        # )
 
     def update_progress(self, steps: float | None = 1) -> None:
         """Update the progress bar value."""
@@ -171,8 +179,54 @@ class DefaultScreen(Screen):
                 yield Button(label="Load settings", id="load", variant="default")
                 if "--serve" not in sys.argv:
                     yield Button(label="Serve remotely", id="serve", variant="default")
-            with VerticalGroup(name="Overview", id="Overview"):
-                yield MeasurementSchedule(id="MeasurementSchedule")
+            with VerticalGroup(id="Overview"):
+                with VerticalGroup(id="Selections"):
+                    with HorizontalGroup(classes="SetupRow"):
+                        with VerticalGroup(id="LosslessSwitch", classes="SetupField"):
+                            yield Label(
+                                "Lossless audio", id="LosslessLabel", variant="primary"
+                            )
+                            yield Static("Use lossless audio files for measurements")
+                            yield Switch(id="lossless", value=True)
+                        with VerticalGroup(id="ReferenceSwitch", classes="SetupField"):
+                            yield Label(
+                                "Measure reference position",
+                                id="ReferenceLabel",
+                                variant="primary",
+                            )
+                            yield Static(
+                                "Measure the reference position first (recommended)"
+                            )
+                            yield Switch(id="reference", value=True)
+                    with HorizontalGroup(classes="SetupRow"):
+                        with VerticalGroup(id="Iterations", classes="SetupField"):
+                            yield Label(
+                                "Iterations per position",
+                                id="IterationsLabel",
+                                variant="primary",
+                            )
+                            yield Static("Number of measurements")
+                            yield Input(
+                                id="iterations",
+                                value="1",
+                                placeholder="1 to 99",
+                                type="integer",
+                            )
+                        with VerticalGroup(id="Positions", classes="SetupField"):
+                            yield Label(
+                                "Number of positions",
+                                id="PositionsLabel",
+                                variant="primary",
+                            )
+                            yield Static("Number of positions to measure")
+                            yield Input(
+                                id="positions",
+                                value="1",
+                                placeholder="1 to 99",
+                                type="integer",
+                            )
+                with VerticalScroll(id="ScheduleArea"):
+                    yield MeasurementSchedule(id="MeasurementSchedule")
         with HorizontalGroup(id="Info"):
             yield RichLog(id="ConsoleLog", auto_scroll=True, max_lines=10)
             with VerticalGroup(id="ProgressBars"):
