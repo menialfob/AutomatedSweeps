@@ -20,7 +20,6 @@ from textual.widgets import (
     SelectionList,
 )
 from textual.binding import Binding, BindingType
-from textual import log
 
 from textual.widgets.option_list import Option
 from textual.widgets.selection_list import Selection
@@ -51,24 +50,12 @@ class ChannelSelector(VerticalGroup):
 class ChannelList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channels = reactive(
-        config.selected_channels, recompose=True, layout=True, repaint=True
-    )
-
-    def on_show(self) -> None:
-        self.channels = config.selected_channels.copy()
-        self.refresh()
-        log.debug(f"ChannelList mounted with {self.channels}")
-
-    def watch_channels(self, channels) -> None:
-        log.debug(f"ChannelList watched with {channels}")
-
     def compose(self) -> ComposeResult:
-        log.debug(f"ChannelList composed with {self.channels}")
-        log.debug(f"ChannelList got reactive from {config.selected_channels}")
+        # log.debug(f"ChannelList composed with {self.channels}")
+        # log.debug(f"ChannelList got reactive from {config.selected_channels}")
         self.channel_options: list = [
             Option(prompt=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-            for ch in self.channels.keys()
+            for ch in config.selected_channels.keys()
         ]
         yield Label("When measuring...", id="ChannelLabel")
         yield OptionList(*self.channel_options, id="ChannelOptionsList")
@@ -77,18 +64,10 @@ class ChannelList(VerticalGroup):
 class AudioList(VerticalGroup):
     """A radio set widget for selecting audio channels."""
 
-    channels = reactive(
-        config.selected_channels, recompose=True, layout=True, repaint=True
-    )
-
-    def on_show(self) -> None:
-        self.channels = config.selected_channels.copy()
-        self.refresh()
-
     def compose(self) -> ComposeResult:
         self.audio_buttons: list = [
             RadioButton(label=f"{config.ALL_CHANNEL_NAMES[ch]} ({ch})", id=ch)
-            for ch in self.channels.keys()
+            for ch in config.selected_channels.keys()
         ]
         yield Label("...then play this audio file", id="AudioLabel")
         yield RadioSet(*self.audio_buttons, id="AudioOptionsList")
@@ -222,6 +201,6 @@ class ConfigScreen(Screen):
                 yield Button(label="Back", id="back", variant="default")
                 yield Button(label="Save settings", id="save", variant="default")
             yield ChannelSelector(id="ChannelSelectGroup")
-            yield ChannelList(id="ChannelGroup").data_bind(ConfigScreen.channels)
-            yield AudioList(id="AudioGroup").data_bind(ConfigScreen.channels)
+            yield ChannelList(id="ChannelGroup")  # .data_bind(ConfigScreen.channels)
+            yield AudioList(id="AudioGroup")  # .data_bind(ConfigScreen.channels)
         yield Footer(id="Footer", show_command_palette=False)

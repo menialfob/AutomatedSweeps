@@ -22,10 +22,12 @@ from ui import (
     SelectionList,
     ChannelList,
     AudioList,
+    ChannelSelector,
 )
 from utils import get_audio_channels, get_ip, load_settings, save_settings
 import config
 from textual import log
+from collections import OrderedDict
 
 
 class AutoSweepApp(App):
@@ -56,8 +58,6 @@ class AutoSweepApp(App):
 
         self.selected_channel = None
 
-    # def on_command_selected(self, message: CommandSelected) -> None:
-
     def on_selection_list_selected_changed(
         self, message: SelectionList.SelectedChanged
     ) -> None:
@@ -69,14 +69,23 @@ class AutoSweepApp(App):
             for ch in item.split("/"):
                 config.selected_channels[ch] = ch
 
-        # selected = message.selection_list.SelectedChanged.split('/')
+        # Sort config.selected_channels according to the order in ALL_CHANNEL_NAMES
+        sorted_selected_channels = OrderedDict(
+            (k, config.selected_channels[k])
+            for k in config.ALL_CHANNEL_NAMES
+            if k in config.selected_channels
+        )
+
+        # Replace the original dict with the sorted one
+        config.selected_channels.clear()
+        config.selected_channels.update(sorted_selected_channels)
 
         log.debug(f"Selected options: {config.selected_channels}")
 
         self.channels_list = self.query_one(ChannelList)
-        self.channels_list.mutate_reactive(ChannelList.channels)
+        self.channels_list.refresh(recompose=True)
         self.audio_list = self.query_one(AudioList)
-        self.audio_list.mutate_reactive(AudioList.channels)
+        self.audio_list.refresh(recompose=True)
 
     def on_option_list_option_highlighted(
         self, message: OptionList.OptionSelected
@@ -116,6 +125,14 @@ class AutoSweepApp(App):
 
         if event.button.id == "configure":
             await self.push_screen("ConfigScreen")
+            self.channels_overview = self.query_one(
+                "#ChannelSelectGroup", ChannelSelector
+            )
+            self.channels_overview.refresh(recompose=True)
+            self.channels_list = self.query_one(ChannelList)
+            self.channels_list.refresh(recompose=True)
+            self.audio_list = self.query_one(AudioList)
+            self.audio_list.refresh(recompose=True)
 
             # global channels, iterations, totalprogress
             # channels = 11

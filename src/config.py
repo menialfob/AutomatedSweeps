@@ -1,18 +1,5 @@
 # Constants
 SETTINGS_FILE = "settings.json"
-DEFAULT_CHANNELS = [
-    "C",
-    "FL",
-    "FR",
-    "SLA",
-    "SRA",
-    "TFL",
-    "TFR",
-    "TRL",
-    "TRR",
-    "SW1",
-    "SW2",
-]
 
 PAIR_CHANNEL_NAMES = {
     "Back Dolby": "BDL/BDR",
@@ -62,10 +49,6 @@ ALL_CHANNEL_NAMES = {
     "SHR": "Surround Height Right",
     "SLA": "Surround Left",
     "SRA": "Surround Right",
-    "SW1": "Subwoofer 1",
-    "SW2": "Subwoofer 2",
-    "SW3": "Subwoofer 3",
-    "SW4": "Subwoofer 4",
     "TFL": "Top Front Left",
     "TFR": "Top Front Right",
     "TML": "Top Middle Left",
@@ -73,6 +56,10 @@ ALL_CHANNEL_NAMES = {
     "TRL": "Top Rear Left",
     "TRR": "Top Rear Right",
     "TS": "Top Surround (Auro-3D)",
+    "SW1": "Subwoofer 1",
+    "SW2": "Subwoofer 2",
+    "SW3": "Subwoofer 3",
+    "SW4": "Subwoofer 4",
 }
 
 selected_channels: dict[str] = {}
