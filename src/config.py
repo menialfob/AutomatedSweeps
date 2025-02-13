@@ -71,15 +71,19 @@ def default_channel_config():
 
 
 selected_channels = defaultdict(default_channel_config)
-# def nested_dict() -> defaultdict:
-#     return defaultdict(nested_dict)
 
-
-# selected_channels: defaultdict = nested_dict()
+utility_steps: dict[str] = {
+    "checkSettings": "Not started",
+    "measureFR": "Not started",
+    "measureFL": "Not started",
+    "checkMic": "Not started",
+}
 
 lossless_audio: bool = True
 
 measure_mic_position: bool = True
+
+measure_reference: bool = True
 
 measure_iterations: int = 1
 

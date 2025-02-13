@@ -77,11 +77,19 @@ Screen {
                 width: 30;
                 margin: 1 0 0 1;
             }
+            #LosslessSwitch {
+                # content-align: center middle;
+                width: 30;
+                height: 1fr;
+                align: left bottom;
+                margin: 1 0 1 1;
+            }
         }
         #ChannelSelectGroup {
             column-span: 2;
+            row-span: 1;
             #ChannelOptionsLabel {
-                padding: 1 0 1 1;
+                padding: 1 0 0 1;
                 width: 1fr;
                 content-align: center middle;
             }
@@ -92,24 +100,29 @@ Screen {
         }
         #ChannelGroup {
             column-span: 1;
+            row-span: 2;
             #ChannelLabel {
                 padding-left: 1;
                 width: 1fr;
                 content-align: center middle;
             }
             #ChannelOptionsList {
+                overflow-x: auto;
                 width: 1fr;
                 height: auto;
             }
         }
         #AudioGroup {
             column-span: 1;
+            row-span: 2;
             #AudioLabel {
                 padding-left: 1;
                 width: 1fr;
                 content-align: center middle;
             }
             #AudioOptionsList {
+                max-height: 100%;
+                # overflow-x: hidden;
                 width: 1fr;
                 height: auto;
             }

@@ -51,6 +51,17 @@ class MeasurementSchedule(Static):
 
         log.debug(f"initial table: {self.table}")
 
+        # Always check settings first
+        self.table.add_row(
+            f"#{self.step_count}",
+            "Check REW settings",
+            "---",
+            "---",
+            "Utility",
+            "---",
+            config.utility_steps["checkSettings"],
+        )
+
         if config.measure_mic_position:
             self.table.add_row(
                 f"#{self.step_count}",
@@ -59,7 +70,7 @@ class MeasurementSchedule(Static):
                 "FL",
                 "Utility",
                 "Reference",
-                "Not started",
+                config.utility_steps["measureFL"],
             )
             self.step_count += 1
 
@@ -70,18 +81,18 @@ class MeasurementSchedule(Static):
                 "FR",
                 "Utility",
                 "Reference",
-                "Not started",
+                config.utility_steps["measureFR"],
             )
             self.step_count += 1
 
             self.table.add_row(
                 f"#{self.step_count}",
                 "Check microphone position",
-                "----",
+                "---",
                 "---",
                 "Utility",
                 "Reference",
-                "Not started",
+                config.utility_steps["checkMic"],
             )
             self.step_count += 1
 
@@ -92,13 +103,12 @@ class MeasurementSchedule(Static):
                     "Measure sweep",
                     channel,
                     mapping["audio"],
-                    "Reference"
-                    if config.measure_position_name == "Reference" and i == 0
-                    else f"{i}",
+                    "Reference" if config.measure_reference and i == 0 else f"{i + 1}",
                     config.measure_position_name,
                     mapping["status"],
                 )
                 self.step_count += 1
+            self.table.add_section()
         self.update(self.table)
         log.debug(f"self.table: {self.table}")
 
@@ -194,28 +204,34 @@ class DefaultScreen(Screen):
         yield Header(id="Header")
         with HorizontalGroup(id="MainArea"):
             with VerticalGroup(id="Commands"):
-                yield Button(label="Setup", id="configure", variant="default")
-                yield Button(label="Start measurement", id="start", variant="success")
-                # yield Button(label="Pause measurement", id="pause", variant="warning")
+                yield Button(
+                    label="Start measurement",
+                    id="start",
+                    variant="success",
+                    name="start",
+                )
                 yield Button(
                     label="Stop measurement", id="stop", variant="error", disabled=True
                 )
+                yield Button(label="Setup", id="configure", variant="default")
                 yield Button(label="Load settings", id="load", variant="default")
                 if "--serve" not in sys.argv:
                     yield Button(label="Serve remotely", id="serve", variant="default")
             with VerticalGroup(id="Overview"):
                 with VerticalGroup(id="Selections"):
                     with HorizontalGroup(classes="SetupRow"):
-                        with VerticalGroup(id="LosslessSwitch", classes="SetupField"):
-                            yield Label(
-                                "Lossless audio", id="LosslessLabel", variant="primary"
-                            )
-                            yield Static("Use lossless audio files for measurements")
-                            yield Switch(id="lossless", value=True)
                         with VerticalGroup(id="ReferenceSwitch", classes="SetupField"):
                             yield Label(
-                                "Center microphone",
+                                "Reference position",
                                 id="ReferenceLabel",
+                                variant="primary",
+                            )
+                            yield Static("Measure reference position")
+                            yield Switch(id="reference", value=True)
+                        with VerticalGroup(id="CenteringSwitch", classes="SetupField"):
+                            yield Label(
+                                "Center microphone",
+                                id="CenteringLabel",
                                 variant="primary",
                             )
                             yield Static(
@@ -230,7 +246,7 @@ class DefaultScreen(Screen):
                                 variant="primary",
                             )
                             yield Static(
-                                "Input the number of measurements that you want to perform at the current position"
+                                "Input the number of measurements that you want to perform at this position"
                             )
                             yield Input(
                                 id="iterations",
@@ -245,13 +261,14 @@ class DefaultScreen(Screen):
                                 variant="primary",
                             )
                             yield Static(
-                                "Enter 'Reference' for measuring main listening position, or a custom name for other positions"
+                                "Enter a custom name for your position such as 'couch 1' or simply a number"
                             )
                             yield Input(
                                 id="position",
-                                value="Reference",
-                                placeholder="Position name or 'Reference' for MLP",
+                                value="",
+                                placeholder="Position name",
                                 type="text",
+                                disabled=True,
                             )
                 with VerticalScroll(id="ScheduleArea"):
                     yield MeasurementSchedule(id="MeasurementSchedule")
@@ -300,6 +317,10 @@ class ConfigScreen(Screen):
             with VerticalGroup(id="Commands"):
                 yield Button(label="Back", id="back", variant="default")
                 yield Button(label="Save settings", id="save", variant="default")
+                with VerticalGroup(id="LosslessSwitch"):
+                    yield Label("Lossless audio", id="LosslessLabel", variant="primary")
+                    yield Static("Use lossless audio")
+                    yield Switch(id="lossless", value=True)
             yield ChannelSelector(id="ChannelSelectGroup")
             yield ChannelList(id="ChannelGroup")  # .data_bind(ConfigScreen.channels)
             yield AudioList(id="AudioGroup")  # .data_bind(ConfigScreen.channels)

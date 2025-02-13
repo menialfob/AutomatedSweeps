@@ -2,7 +2,7 @@ import sys
 import threading
 
 from textual.app import App
-from textual.worker import Worker
+from textual.worker import Worker, get_current_worker
 
 from audio import get_audio_files
 from measurement import run_measurements
@@ -30,6 +30,8 @@ from utils import get_audio_channels, get_ip, load_settings, save_settings
 import config
 from textual import log
 from collections import OrderedDict
+
+import time
 
 
 class AutoSweepApp(App):
@@ -97,9 +99,9 @@ class AutoSweepApp(App):
         log.debug(f"Selected options: {config.selected_channels}")
 
         self.channels_list = self.query_one(ChannelList)
-        self.channels_list.refresh(recompose=True)
+        self.channels_list.refresh(recompose=True, layout=True)
         self.audio_list = self.query_one(AudioList)
-        self.audio_list.refresh(recompose=True)
+        self.audio_list.refresh(recompose=True, layout=True)
 
     def on_option_list_option_highlighted(
         self, message: OptionList.OptionSelected
@@ -138,11 +140,24 @@ class AutoSweepApp(App):
 
         self.switch_value = event.switch.value
 
-        if event.switch.id == "lossless":
-            config.lossless_audio = event.switch.value
+        if event.switch.id == "reference":
+            config.measure_reference = self.switch_value
+
+            # Disable centering switch if reference is False since you can only center at the reference position
+            self.centering_switch = self.query_one("#centering", Switch)
+            self.centering_switch.value = self.switch_value
+            self.centering_switch.disabled = not self.switch_value
+
+            # Set position name to 'Reference' if measuring reference and disable changing
+            self.position_input = self.query_one("#position", Input)
+            self.position_input.value = "Reference" if self.switch_value else ""
+            self.position_input.disabled = self.switch_value
 
         elif event.switch.id == "centering":
             config.measure_mic_position = self.switch_value
+
+        elif event.switch.id == "lossless":
+            config.lossless_audio = event.switch.value
 
         # Update measurement schedule
         self.measurement_schedule.populate_table()
@@ -185,16 +200,46 @@ class AutoSweepApp(App):
             log.info("No settings file found.")
 
         elif event.button.id == "start":
-            self.main_console.write("Starting measurement...")
+            self.start_button = self.query_one("#start", Button)
+            self.stop_button = self.query_one("#stop", Button)
 
-            # Run measurement in a background worker
-            self.run_worker(self.run_measurement, thread=True, exclusive=True)
+            # Enable stop button
+            self.stop_button.disabled = False
 
-        elif event.button.id == "pause":
-            self.main_console.write("Pausing measurement...")
+            # if button is green it must be started
+            if event.button.variant == "success":
+                log.debug(f"---{event.button.label}---")
+                self.main_console.write("Starting measurement...")
+
+                # Run measurement in a background worker
+                self.run_worker(
+                    self.run_measurement_schedule, thread=True, exclusive=True
+                )
+
+                # Set button to pause
+                self.start_button.variant = "warning"
+                self.start_button.label = "Pause measurement"
+            # If button is yellow it must be paused
+            elif event.button.variant == "warning":
+                self.main_console.write("Resuming measurement...")
+
+                # Set button to resume
+                self.start_button.variant = "success"
+                self.start_button.label = "Resume"
 
         elif event.button.id == "stop":
+            self.stop_button = self.query_one("#stop", Button)
+
+            # Disable stop button
+            self.stop_button.disabled = True
+
+            self.start_button = self.query_one("#start", Button)
+            self.start_button.variant = "success"
+            self.start_button.label = "Start measurement"
+
             self.main_console.write("Stopping measurement...")
+
+            self.worker.cancel()
 
         elif event.button.id == "back":
             await self.pop_screen()
@@ -221,14 +266,41 @@ class AutoSweepApp(App):
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
         """Handles worker completion and updates the UI."""
+        self.start_button = self.query_one("#start", Button)
+        self.stop_button = self.query_one("#stop", Button)
         if event.state.name == "SUCCESS":
+            self.stop_button.disabled = True
+            self.start_button.variant = "success"
+            self.start_button.label = "Start measurement"
             self.complete_measurement()
+        elif event.state.name == "CANCELLED":
+            self.main_console.write("Measurement cancelled.")
+            self.stop_button.disabled = True
+            self.start_button.variant = "success"
+            self.start_button.label = "Start measurement"
 
-    def run_measurement(self):
-        """Runs the measurement process in a worker thread."""
-        # worker = get_current_worker()
-        self.main_console.write("Running measurement...")
-        # main()
+    def run_measurement_schedule(self):
+        """Runs the measurement schedule in a worker thread."""
+        self.worker: Worker = get_current_worker()
+
+        # If worker is not cancelled, continuously check if REW is running with ensure_rew_api(). If not, wait 2 seconds and try again for a maximum of 30 times.
+        rew_api_offline = False
+
+        for _ in range(30):
+            if _ == 1:
+                self.call_from_thread(
+                    self.main_console.write, "REW API is not running, please start it."
+                )
+            if self.worker.is_cancelled:
+                break
+            if ensure_rew_api():
+                self.call_from_thread(self.main_console.write, "REW API is running.")
+                break
+            time.sleep(2)
+        if rew_api_offline:
+            self.call_from_thread(
+                self.main_console.write, "Timed out waiting for REW API to run."
+            )
 
     def complete_measurement(self):
         """Handles completion of the measurement process."""
