@@ -79,7 +79,7 @@ utility_steps: dict[str] = {
     "checkMic": "Not started",
 }
 
-lossless_audio: bool = True
+# lossless_audio: bool = True
 
 measure_mic_position: bool = True
 

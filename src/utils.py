@@ -1,6 +1,8 @@
 import json
 import os
 import socket
+from rew_api import get_measurement_summary
+import sys
 
 from config import SETTINGS_FILE
 
@@ -59,3 +61,50 @@ def get_ip():
 
 
 local_ip = get_ip()
+
+
+def get_microphone_distance(
+    fr_uuid: str,
+    fl_uuid: str,
+) -> int:
+    """Get the distance in cm needed to move the microphone to align the IR peaks of the FR and FL measurements.
+    A negative number means it needs to move to the right speaker, and a positive number means it needs to move to the left speaker."""
+    # Get the time of the IR peak for the FR measurement
+    fr_data = get_measurement_summary(fr_uuid)
+
+    # Get the time of the IR peak for the FL measurement
+    fl_data = get_measurement_summary(fl_uuid)
+
+    # Get the delta time of the IR peak for the FR and FL measurements
+    delta_time = fl_data["timeOfIRPeakSeconds"] - fr_data["timeOfIRPeakSeconds"]
+
+    # Get the distance needed to move the microphone to align the IR peaks
+    speed_of_sound = 343  # m/s
+    distance_meters = delta_time * speed_of_sound
+
+    # Convert the distance to cm
+    distance = int(distance_meters * 100)
+
+    return distance
+
+
+def get_correct_path(path, directory):
+    """Get the correct path for the given file.
+    Args:
+        path (str): Path to the file.
+        directory (str): Directory containing the file.
+
+    Examples:
+        get_correct_path("MeasureButton.png", "assets")
+        get_correct_path("FR.mlp", "assets/Lossless")
+    """
+    if getattr(sys, "frozen", False):
+        base_path = os.path.join(
+            sys._MEIPASS, directory
+        )  # When running as an executable
+    else:
+        base_path = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), f"../{directory}"
+        )  # When running as a script
+
+    return os.path.join(base_path, path)

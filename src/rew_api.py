@@ -81,7 +81,7 @@ def check_new_problems(previous_times):
     return new_problem_times, problems
 
 
-def get_selected_measurement():
+def get_selected_measurement_uuid():
     """Get the id of the selected measurement. Assumption is that selected measurement is the latest one."""
     try:
         response = requests.get(MEASUREMENT_UUID_ENDPOINT)
@@ -89,6 +89,30 @@ def get_selected_measurement():
         data = response.json()
         uuid = data["message"]
         return uuid
+    except requests.RequestException as e:
+        print(f"Error fetching problems: {e}")
+        return {}
+
+
+def get_measurements():
+    """Get a list of measurements."""
+    try:
+        response = requests.get(MEASUREMENT_ENDPOINT)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.RequestException as e:
+        print(f"Error fetching problems: {e}")
+        return {}
+
+
+def get_measurement_summary(uuid):
+    """Get a summary of the measurement by uuid."""
+    try:
+        response = requests.get(MEASUREMENT_ENDPOINT + "/" + uuid)
+        response.raise_for_status()
+        data = response.json()
+        return data
     except requests.RequestException as e:
         print(f"Error fetching problems: {e}")
         return {}
