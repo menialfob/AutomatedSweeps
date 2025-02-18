@@ -581,7 +581,7 @@ class AutoSweepApp(App):
 
     def run_measurement_schedule(self):
         """Runs the measurement schedule in a worker thread."""
-        from workflow import run_positioning_check
+        from process import run_positioning_check
 
         # self.worker: Worker = get_current_worker()
 

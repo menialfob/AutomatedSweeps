@@ -28,7 +28,7 @@ def run_positioning_check(notify_ui):
     fr_uuid = get_selected_measurement_uuid()
 
     # Get the distance needed to move the microphone
-    # A negative number means it needs to move to the right speaker, and a positive number means it needs to move to the left speaker.
+    # A negative number means it needs to move to the right speaker, while a positive number means it needs to move to the left speaker.
     fr_fl_distance = get_microphone_distance(fr_uuid, fl_uuid)
     if fr_fl_distance < 0:
         notify_ui(
