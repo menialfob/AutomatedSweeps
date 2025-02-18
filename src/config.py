@@ -74,10 +74,10 @@ selected_channels = defaultdict(default_channel_config)
 
 utility_steps: dict[str] = {
     "checkSettings": "Not started",
-    "measureFR": "Not started",
-    "measureFL": "Not started",
     "checkMic": "Not started",
 }
+
+measurement_schedule: list[dict] = []
 
 # lossless_audio: bool = True
 

@@ -1,6 +1,7 @@
 import time
 from utils import get_correct_path
 import config
+from threading import Event
 
 import pyautogui
 
@@ -22,7 +23,7 @@ def get_relative_position(reference, offset):
     return reference[0] + offset[0], reference[1] + offset[1]
 
 
-def run_sweep(channel, iteration):
+def run_sweep(channel, iteration, position, audio_file, notify_ui, pause_event: Event):
     """Automate measurement process using Pyautogui."""
 
     # Get positions
@@ -37,25 +38,27 @@ def run_sweep(channel, iteration):
     measurement_name = (
         f"{channel}"
         if config.measure_reference
-        else f"{channel} (Pos: {config.measure_position_name} - Iter: {iteration})"
+        else f"{channel} (Pos: {position} - Iter: {iteration})"
     )
     pyautogui.typewrite(measurement_name)
     pyautogui.click(*notes_textbox_rew)
 
-    # Check if the subwoofer channel is mapped to a different audio file
-    subwoofer_channel_remapped: bool = all(
-        value["audio"] == key
-        for key, value in config.selected_channels.items()
-        if key.startswith("SW")
-    )
-
     # Pause if the channel is SW2, SW3, or SW4
-    if not subwoofer_channel_remapped and channel in {"SW2", "SW3", "SW4"}:
-        input(
-            f"You are measuring {channel}, please plug your {channel} into SW1 and press Enter to continue..."
+    if channel is audio_file and channel in {"SW2", "SW3", "SW4"}:
+        # Use notify_ui to inform the user to switch cables
+        notify_ui(
+            {
+                "type": "info",
+                "contents": f"Please plug your {channel} into SW1 and press Enter to continue...",
+            }
         )
+        # Pause until the user is ready to measure
+        pause_event.clear()
+        pause_event.wait()
 
-    audio_file: str = config.selected_channels[channel]["audio"]
+    if not pause_event.is_set():
+        notify_ui.info("Paused inside sweep_and_check_problems")
+        pause_event.wait()
 
     pyautogui.click(*start_button_rew)
     play_sweep(f"{'SWx' if audio_file.startswith('SW') else audio_file}")

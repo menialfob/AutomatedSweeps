@@ -2,7 +2,6 @@ import sys
 
 from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll
-from textual.message import Message
 from textual.screen import Screen
 from textual.reactive import reactive
 from textual.widgets import (
@@ -12,7 +11,6 @@ from textual.widgets import (
     Label,
     Link,
     OptionList,
-    ProgressBar,
     RichLog,
     RadioSet,
     RadioButton,
@@ -49,7 +47,7 @@ class MeasurementSchedule(Static):
         """Populate the table with the measurement steps."""
         self.table = None
         self.table = Table(title="Measurement Schedule", expand=True)
-        self.step_count = 1
+        # self.step_count = 1
         self.table.add_column("Step", no_wrap=True)
         self.table.add_column("Description", style="cyan", no_wrap=True)
         self.table.add_column("Channel", no_wrap=True)
@@ -60,64 +58,16 @@ class MeasurementSchedule(Static):
 
         log.debug(f"initial table: {self.table}")
 
-        # Always check settings first
-        self.table.add_row(
-            f"#{self.step_count}",
-            "Check REW settings",
-            "---",
-            "---",
-            "Utility",
-            "---",
-            config.utility_steps["checkSettings"],
-        )
-
-        if config.measure_mic_position:
+        for index, step in enumerate(config.measurement_schedule):
             self.table.add_row(
-                f"#{self.step_count}",
-                "Measure FL Distance",
-                "FL",
-                "FL",
-                "Utility",
-                "Reference",
-                config.utility_steps["measureFL"],
+                f"#{index + 1}",
+                step["Description"],
+                step["Channel"],
+                step["Audio played"],
+                step["Iteration"],
+                step["Position"],
+                step["Status"],
             )
-            self.step_count += 1
-
-            self.table.add_row(
-                f"#{self.step_count}",
-                "Measure FR Distance",
-                "FR",
-                "FR",
-                "Utility",
-                "Reference",
-                config.utility_steps["measureFR"],
-            )
-            self.step_count += 1
-
-            self.table.add_row(
-                f"#{self.step_count}",
-                "Check microphone position",
-                "---",
-                "---",
-                "Utility",
-                "Reference",
-                config.utility_steps["checkMic"],
-            )
-            self.step_count += 1
-
-        for i in range(config.measure_iterations):
-            for channel, mapping in config.selected_channels.items():
-                self.table.add_row(
-                    f"#{self.step_count}",
-                    "Measure sweep",
-                    channel,
-                    mapping["audio"],
-                    "Reference" if config.measure_reference and i == 0 else f"{i + 1}",
-                    config.measure_position_name,
-                    mapping["status"],
-                )
-                self.step_count += 1
-            self.table.add_section()
         self.update(self.table)
         log.debug(f"self.table: {self.table}")
 
@@ -166,43 +116,25 @@ class AudioList(VerticalGroup):
         yield RadioSet(*self.audio_buttons, id="AudioOptionsList")
 
 
-class MeasurementProgressUpdate(Message):
-    """Custom event to send progress updates to the UI."""
-
-    def __init__(self, progress: float):
-        self.progress = progress  # A float between 0 and 1
-        super().__init__()
-
-
-class MeasurementProgress(ProgressBar):
-    """A progress bar widget for displaying measurement progress."""
-
-    def on_mount(self) -> None:
-        """Event handler for when the widget is mounted."""
-
-    def update_progress(self, steps: float | None = 1) -> None:
-        """Update the progress bar value."""
-        self.advance(steps)
-
-    def start(self) -> None:
-        """Start the progress bar."""
-        # self.update_progress_bar.resume()
-
-    def pause(self) -> None:
-        """Pause the progress bar."""
-        # self.update_progress_bar.pause()
-
-    def stop(self) -> None:
-        """Stop the progress bar."""
-        # self.update_progress_bar.pause()
-        self.update(progress=0)
-
-
 class DefaultScreen(Screen):
     BINDINGS: list[BindingType] = [
-        Binding("q", "app.quit", "Quit the application", show=True, priority=True),
-        Binding("s", "app.stop", "Stop the measurement", show=True, priority=True),
-        Binding("p", "app.pause", "Pause the measurement", show=True, priority=True),
+        Binding(
+            "q", "app.quit_safely", "Quit the application", show=True, priority=True
+        ),
+        Binding(
+            "s",
+            "app.stop_measurement_schedule",
+            "Stop the measurement",
+            show=True,
+            priority=True,
+        ),
+        Binding(
+            "p",
+            "app.pause_measurement_schedule",
+            "Pause the measurement",
+            show=True,
+            priority=True,
+        ),
         Binding("down", "app.focus_next", "Next button", show=True, priority=True),
         Binding(
             "up", "app.focus_previous", "Previous button", show=True, priority=True
@@ -288,7 +220,9 @@ class DefaultScreen(Screen):
 
 class ServeScreen(Screen):
     BINDINGS: list[BindingType] = [
-        Binding("q", "app.quit", "Quit the application", show=True, priority=True),
+        Binding(
+            "q", "app.quit_safely", "Quit the application", show=True, priority=True
+        ),
     ]
 
     # A screen showing the user that the app is currently being served at a remote IP
@@ -311,7 +245,9 @@ class ServeScreen(Screen):
 class ConfigScreen(Screen):
     # A channel mapping configuration screen
     BINDINGS: list[BindingType] = [
-        Binding("q", "app.quit", "Quit the application", show=True, priority=True),
+        Binding(
+            "q", "app.quit_safely", "Quit the application", show=True, priority=True
+        ),
         Binding("right", "app.focus_next", "Next button", show=True, priority=True),
         Binding(
             "left", "app.focus_previous", "Previous button", show=True, priority=True
@@ -353,6 +289,8 @@ class AutoSweepApp(App):
 
         self.selected_channel = None
 
+        self.generate_measurement_schedule()
+
         # Update measurement schedule
         self.measurement_schedule = self.query_one(
             "#MeasurementSchedule", MeasurementSchedule
@@ -374,6 +312,67 @@ class AutoSweepApp(App):
         self.main_console.write(
             "[italic]Note that the position name 'Reference' carries a special significance and should be used for your first measurements of the Main Listening Position (MLP) / reference position.[/italic]"
         )
+
+    def generate_measurement_schedule(self):
+        """Generates the measurement schedule based on the current configuration."""
+
+        # Clear the measurement schedule
+        config.measurement_schedule.clear()
+
+        # We always need the check settings step
+        check_settings = {
+            "Description": "Check REW settings",
+            "Channel": "---",
+            "Audio played": "---",
+            "Iteration": "Utility",
+            "Position": "---",
+            "Status": "Not started",
+        }
+
+        config.measurement_schedule.append(check_settings)
+
+        if config.measure_mic_position:
+            check_mic_schedule = [
+                {
+                    "Description": "Measure distance",
+                    "Channel": "FL",
+                    "Audio played": "FL",
+                    "Iteration": "Utility",
+                    "Position": "Reference",
+                    "Status": "Not started",
+                },
+                {
+                    "Description": "Measure distance",
+                    "Channel": "FR",
+                    "Audio played": "FR",
+                    "Iteration": "Utility",
+                    "Position": "Reference",
+                    "Status": "Not started",
+                },
+                {
+                    "Description": "Check microphone position",
+                    "Channel": "---",
+                    "Audio played": "---",
+                    "Iteration": "Utility",
+                    "Position": "Reference",
+                    "Status": "Not started",
+                },
+            ]
+
+            config.measurement_schedule.extend(check_mic_schedule)
+        for i in range(config.measure_iterations):
+            for channel, mapping in config.selected_channels.items():
+                step = {
+                    "Description": "Measure sweep",
+                    "Channel": channel,
+                    "Audio played": mapping["audio"],
+                    "Iteration": "Reference"
+                    if config.measure_reference and i == 0
+                    else f"{i + 1}",
+                    "Position": config.measure_position_name,
+                    "Status": "Not started",
+                }
+                config.measurement_schedule.append(step)
 
     def on_selection_list_selected_changed(
         self, message: SelectionList.SelectedChanged
@@ -405,6 +404,9 @@ class AutoSweepApp(App):
         self.audio_list = self.query_one(AudioList)
         self.audio_list.refresh(recompose=True, layout=True)
 
+        # Update measurement schedule
+        self.generate_measurement_schedule()
+
     def on_option_list_option_highlighted(
         self, message: OptionList.OptionSelected
     ) -> None:
@@ -423,6 +425,9 @@ class AutoSweepApp(App):
         self.radio_button = self.query_one(f"#{mapped_option}", RadioButton)
         self.radio_button.value = True
 
+        # Update measurement schedule
+        self.generate_measurement_schedule()
+
     def on_radio_set_changed(self, message: RadioSet.Changed) -> None:
         """Handle changes in the selected radio button (new channel mapping)."""
         original_channel = self.selected_channel  # The channel the user is mapping from
@@ -435,6 +440,9 @@ class AutoSweepApp(App):
             log.debug(f"Mapping updated: {original_channel} -> {new_mapping}")
         else:
             log.warning("Either original channel or new mapping is missing.")
+
+        # Update measurement schedule
+        self.generate_measurement_schedule()
 
     def on_switch_changed(self, event: Switch.Changed) -> None:
         """Handle changes in the switch."""
@@ -462,6 +470,9 @@ class AutoSweepApp(App):
         #     config.lossless_audio = event.switch.value
 
         # Update measurement schedule
+        self.generate_measurement_schedule()
+
+        # Refresh measurement table
         self.measurement_schedule.populate_table()
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
@@ -475,6 +486,9 @@ class AutoSweepApp(App):
             config.measure_iterations = int(event.input.value)
 
         # Update measurement schedule
+        self.generate_measurement_schedule()
+
+        # Refresh measurement table
         self.measurement_schedule.populate_table()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -498,6 +512,9 @@ class AutoSweepApp(App):
                 log.debug(f"Loaded settings: {config.selected_channels}")
 
                 # Update measurement schedule
+                self.generate_measurement_schedule()
+
+                # Refresh measurement table
                 self.measurement_schedule.populate_table()
             log.info("No settings file found.")
 
@@ -511,17 +528,21 @@ class AutoSweepApp(App):
             # if button is green it must be started
             if event.button.variant == "success":
                 log.debug(f"---{event.button.label}---")
-                self.main_console.write("Starting measurement...")
+                self.main_console.write("Starting measurement schedule...")
 
                 # Run measurement in a background worker
-                self.run_measurement_schedule()
+                self.start_measurement_schedule()
 
                 # Set button to pause
                 self.start_button.variant = "warning"
                 self.start_button.label = "Pause measurement"
+
             # If button is yellow it must be paused
             elif event.button.variant == "warning":
-                self.main_console.write("Resuming measurement...")
+                self.main_console.write("Pausing measurement schedule...")
+
+                # Pause measurement schedule
+                self.action_pause_measurement_schedule()
 
                 # Set button to resume
                 self.start_button.variant = "success"
@@ -539,13 +560,15 @@ class AutoSweepApp(App):
 
             self.main_console.write("Stopping measurement...")
 
-            self.worker.cancel()
+            self.action_stop_measurement_schedule()
 
         elif event.button.id == "back":
             await self.pop_screen()
-            self.measurement_schedule = self.query_one(
-                "#MeasurementSchedule", MeasurementSchedule
-            )
+
+            # Update measurement schedule
+            self.generate_measurement_schedule()
+
+            # Refresh measurement table
             self.measurement_schedule.populate_table()
 
         elif event.button.id == "serve":
@@ -559,7 +582,7 @@ class AutoSweepApp(App):
 
         elif event.button.id == "quit":
             self.main_console.write("Stopping server...")
-            await self.action_quit()
+            self.action_quit_safely()
 
         elif event.button.id == "save":
             save_settings(config.selected_channels)
@@ -579,43 +602,86 @@ class AutoSweepApp(App):
             self.start_button.variant = "success"
             self.start_button.label = "Start measurement"
 
-    def run_measurement_schedule(self):
+    def start_measurement_schedule(self):
         """Runs the measurement schedule in a worker thread."""
-        from process import run_positioning_check
+        from process import run_workflow
 
-        # self.worker: Worker = get_current_worker()
+        # If a worker is running, then this event must be resuming from a pause
+        if hasattr(self, "worker") and self.worker is not None:
+            self.pause_event.set()  # Unpause the worker
+        else:
+            self.stop_event = threading.Event()  # Used to stop the thread
+            self.pause_event = threading.Event()  # Used to pause execution
+            self.pause_event.set()  # Start as unpaused
 
-        # Define a thread-safe UI writer function
-        def notify_ui(message: dict[str]):
-            if message["type"] == "info":
-                self.call_from_thread(self.main_console.write, message["contents"])
-            if message["type"] == "update":
-                self.call_from_thread(self.measurement_schedule.populate_table)
+            # Define a thread-safe UI writer function
+            # Initialize NotifyUI instance
+            self.message_ui = MessageUI(
+                self.main_console,
+                self.measurement_schedule,
+                self.call_from_thread,
+                self.thread_set_event,
+            )
 
-        # Run the workflow as a background task
-        self.run_worker(
-            lambda: run_positioning_check(notify_ui), thread=True, exclusive=True
-        )
+            # Run the workflow as a background task
+            self.worker = self.run_worker(
+                lambda: run_workflow(
+                    self.message_ui, self.pause_event, self.stop_event
+                ),
+                thread=True,
+                exclusive=True,
+            )
 
-        # # If worker is not cancelled, continuously check if REW is running with ensure_rew_api(). If not, wait 2 seconds and try again for a maximum of 30 times.
-        # rew_api_offline = False
+    async def action_stop_measurement_schedule(self):
+        """Stops the measurement schedule."""
+        if hasattr(self, "stop_event") and hasattr(self, "pause_event"):
+            self.stop_event.set()  # Tell the thread to exit
+            self.pause_event.set()  # Unpause to allow clean exit
 
-        # for _ in range(30):
-        #     if _ == 1:
-        #         self.call_from_thread(
-        #             self.main_console.write, "REW API is not running, please start it."
-        #         )
-        #     if self.worker.is_cancelled:
-        #         break
-        #     if ensure_rew_api():
-        #         self.call_from_thread(self.main_console.write, "REW API is running.")
-        #         break
-        #     time.sleep(2)
-        # if rew_api_offline:
-        #     self.call_from_thread(
-        #         self.main_console.write, "Timed out waiting for REW API to run."
-        #     )
+            # Check if worker exists and cancel it
+            if hasattr(self, "worker") and self.worker is not None:
+                await self.worker.cancel()
+
+        # Clear the measurement schedule
+        self.generate_measurement_schedule()
+
+    def action_pause_measurement_schedule(self):
+        """Pauses the measurement schedule."""
+        self.pause_event.clear()
+
+    async def action_quit_safely(self):
+        """Quits the application."""
+        self.main_console.write("Quitting safely...")
+
+        await self.action_stop_measurement_schedule()
+        await self.action_quit()
+
+    def thread_set_event(self, event: threading.Event):
+        self.thread_event = event
 
     def complete_measurement(self):
         """Handles completion of the measurement process."""
         self.main_console.write("Measurement completed!")
+
+
+class MessageUI:
+    def __init__(
+        self, main_console, measurement_schedule, call_from_thread, thread_set_event
+    ):
+        self.main_console = main_console
+        self.measurement_schedule = measurement_schedule
+        self.call_from_thread = call_from_thread
+        self.thread_set_event = thread_set_event
+
+    def info(self, contents: str):
+        """Send an informational message to the UI."""
+        self.call_from_thread(self.main_console.write, contents)
+
+    def update(self):
+        """Trigger a UI update for the measurement schedule."""
+        self.call_from_thread(self.measurement_schedule.populate_table)
+
+    def input(self, contents: threading.Event):
+        """Indicate that input is required from the user."""
+        self.call_from_thread(self.main_console.write, "Thread waiting for input.")
+        self.call_from_thread(self.thread_set_event, contents)
