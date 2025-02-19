@@ -3,6 +3,7 @@ import os
 import socket
 from rew_api import get_measurement_summary
 import sys
+from threading import Event
 
 from config import SETTINGS_FILE
 
@@ -108,3 +109,16 @@ def get_correct_path(path, directory):
         )  # When running as a script
 
     return os.path.join(base_path, path)
+
+
+def check_control_events(pause_event: Event, stop_event: Event, message_ui):
+    """Checks stop and pause events. Returns True if the loop should break, False otherwise."""
+    if stop_event.is_set():
+        return True  # Indicate that the caller should break out of its loop
+
+    if not pause_event.is_set():  # Wait while paused
+        pause_event.wait()  # Waiting until the pause event is set
+        if stop_event.is_set():
+            return True  # Indicate that the caller should break out of its loop
+
+    return False  # Indicate that the loop can continue

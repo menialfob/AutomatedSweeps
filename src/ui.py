@@ -1,9 +1,10 @@
 import sys
 
 from textual.app import ComposeResult
-from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll
+from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll, Grid
 from textual.screen import Screen
 from textual.reactive import reactive
+from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Footer,
@@ -33,7 +34,6 @@ import config
 import threading
 
 from textual.app import App
-from textual.worker import Worker
 
 from serve import run_server
 from utils import get_ip, load_settings, save_settings
@@ -270,6 +270,25 @@ class ConfigScreen(Screen):
             yield ChannelList(id="ChannelGroup")  # .data_bind(ConfigScreen.channels)
             yield AudioList(id="AudioGroup")  # .data_bind(ConfigScreen.channels)
         yield Footer(id="Footer", show_command_palette=False)
+
+
+class QuitScreen(ModalScreen[bool]):
+    """Screen with a dialog to quit."""
+
+    def __init__(self, input_text: str) -> None:
+        super().__init__()
+        self.input_text = input_text  # Store input_text as an instance variable
+
+    def compose(self) -> ComposeResult:
+        yield Grid(
+            Label(f"{self.input_text}", id="question"),
+            Button("OK", variant="primary", id="proceed"),
+            Button("Abort", variant="error", id="stop"),
+            id="dialog",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed | None) -> None:
+        self.app.pop_screen()
 
 
 class AutoSweepApp(App):
@@ -527,9 +546,6 @@ class AutoSweepApp(App):
 
             # if button is green it must be started
             if event.button.variant == "success":
-                log.debug(f"---{event.button.label}---")
-                self.main_console.write("Starting measurement schedule...")
-
                 # Run measurement in a background worker
                 self.start_measurement_schedule()
 
@@ -539,8 +555,6 @@ class AutoSweepApp(App):
 
             # If button is yellow it must be paused
             elif event.button.variant == "warning":
-                self.main_console.write("Pausing measurement schedule...")
-
                 # Pause measurement schedule
                 self.action_pause_measurement_schedule()
 
@@ -558,9 +572,10 @@ class AutoSweepApp(App):
             self.start_button.variant = "success"
             self.start_button.label = "Start measurement"
 
-            self.main_console.write("Stopping measurement...")
-
             self.action_stop_measurement_schedule()
+
+        elif event.button.id == "proceed":
+            self.start_measurement_schedule()
 
         elif event.button.id == "back":
             await self.pop_screen()
@@ -587,91 +602,137 @@ class AutoSweepApp(App):
         elif event.button.id == "save":
             save_settings(config.selected_channels)
 
-    def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
-        """Handles worker completion and updates the UI."""
-        self.start_button = self.query_one("#start", Button)
-        self.stop_button = self.query_one("#stop", Button)
-        if event.state.name == "SUCCESS":
-            self.stop_button.disabled = True
-            self.start_button.variant = "success"
-            self.start_button.label = "Start measurement"
-            self.complete_measurement()
-        elif event.state.name == "CANCELLED":
-            self.main_console.write("Measurement cancelled.")
-            self.stop_button.disabled = True
-            self.start_button.variant = "success"
-            self.start_button.label = "Start measurement"
+    # def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
+    #     """Handles worker completion and updates the UI."""
+    #     self.start_button = self.query_one("#start", Button)
+    #     self.stop_button = self.query_one("#stop", Button)
+    #     if event.state.name == "SUCCESS":
+    #         self.stop_button.disabled = True
+    #         self.start_button.variant = "success"
+    #         self.start_button.label = "Start measurement"
+    #         self.complete_measurement()
+    #     elif event.state.name == "CANCELLED":
+    #         self.main_console.write("Measurement cancelled.")
+    #         self.stop_button.disabled = True
+    #         self.start_button.variant = "success"
+    #         self.start_button.label = "Start measurement"
 
     def start_measurement_schedule(self):
         """Runs the measurement schedule in a worker thread."""
-        from process import run_workflow
 
-        # If a worker is running, then this event must be resuming from a pause
+        # If a worker is running, resume it
         if hasattr(self, "worker") and self.worker is not None:
             self.pause_event.set()  # Unpause the worker
-        else:
-            self.stop_event = threading.Event()  # Used to stop the thread
-            self.pause_event = threading.Event()  # Used to pause execution
-            self.pause_event.set()  # Start as unpaused
+            self.main_console.write("Resuming measurement schedule...")
+            return  # Exit, no need to start a new one
 
-            # Define a thread-safe UI writer function
-            # Initialize NotifyUI instance
-            self.message_ui = MessageUI(
-                self.main_console,
-                self.measurement_schedule,
-                self.call_from_thread,
-                self.thread_set_event,
-            )
+        self.main_console.write("[green]Starting measurement schedule...[/green]")
 
-            # Run the workflow as a background task
-            self.worker = self.run_worker(
-                lambda: run_workflow(
-                    self.message_ui, self.pause_event, self.stop_event
-                ),
-                thread=True,
-                exclusive=True,
-            )
+        self.stop_event = threading.Event()  # Used to stop the thread
+        self.pause_event = threading.Event()  # Used to pause execution
+        self.pause_event.set()  # Start as unpaused
 
-    async def action_stop_measurement_schedule(self):
+        # Define a thread-safe UI writer function
+        # Initialize NotifyUI instance
+        self.message_ui = MessageUI(
+            self.main_console,
+            self.measurement_schedule,
+            self.action_wait_input_measurement_schedule,
+            self.action_complete_measurement_schedule,
+            self.call_from_thread,
+        )
+
+        # Run the workflow as a background task
+        from process import run_workflow
+
+        self.worker = self.run_worker(
+            lambda: run_workflow(self.message_ui, self.pause_event, self.stop_event),
+            thread=True,
+            exclusive=True,
+        )
+
+    def action_stop_measurement_schedule(self):
         """Stops the measurement schedule."""
+
+        self.main_console.write("[red]Stopping measurement schedule...[/red]")
         if hasattr(self, "stop_event") and hasattr(self, "pause_event"):
             self.stop_event.set()  # Tell the thread to exit
             self.pause_event.set()  # Unpause to allow clean exit
 
-            # Check if worker exists and cancel it
-            if hasattr(self, "worker") and self.worker is not None:
-                await self.worker.cancel()
+        # Wait for worker thread to finish
+        if hasattr(self, "worker") and self.worker is not None:
+            self.worker.cancel()  # Ensure the worker is fully stopped
+            self.worker = None  # Reset worker to allow restart
 
         # Clear the measurement schedule
         self.generate_measurement_schedule()
 
+        # Refresh measurement table
+        self.measurement_schedule.populate_table()
+
     def action_pause_measurement_schedule(self):
         """Pauses the measurement schedule."""
+        self.main_console.write("[yellow]Pausing measurement schedule...[/yellow]")
         self.pause_event.clear()
+
+    def action_wait_input_measurement_schedule(self, input: str) -> None:
+        """Waits for input from the user to continue the measurement schedule."""
+
+        # Pause the measurement schedule by clearing the pause event
+        self.action_pause_measurement_schedule()
+
+        self.push_screen(QuitScreen(input))
+
+    def action_complete_measurement_schedule(self):
+        """Completes the measurement schedule."""
+
+        self.main_console.write("[green]Completed measurement schedule.[/green]")
+        if hasattr(self, "stop_event") and hasattr(self, "pause_event"):
+            self.stop_event.set()  # Tell the thread to exit
+            self.pause_event.set()  # Unpause to allow clean exit
+
+        # Wait for worker thread to finish
+        if hasattr(self, "worker") and self.worker is not None:
+            self.worker.cancel()  # Ensure the worker is fully stopped
+            self.worker = None  # Reset worker to allow restart
+
+        # Set buttons to default state
+        self.stop_button = self.query_one("#stop", Button)
+
+        # Disable stop button
+        self.stop_button.disabled = True
+
+        self.start_button = self.query_one("#start", Button)
+        self.start_button.variant = "success"
+        self.start_button.label = "Start measurement"
 
     async def action_quit_safely(self):
         """Quits the application."""
         self.main_console.write("Quitting safely...")
 
-        await self.action_stop_measurement_schedule()
+        self.action_stop_measurement_schedule()
+        # Check if worker exists and cancel it
+        if hasattr(self, "worker") and self.worker is not None:
+            self.worker.cancel()
         await self.action_quit()
-
-    def thread_set_event(self, event: threading.Event):
-        self.thread_event = event
-
-    def complete_measurement(self):
-        """Handles completion of the measurement process."""
-        self.main_console.write("Measurement completed!")
 
 
 class MessageUI:
     def __init__(
-        self, main_console, measurement_schedule, call_from_thread, thread_set_event
+        self,
+        main_console: RichLog,
+        measurement_schedule: MeasurementSchedule,
+        action_wait_input_measurement_schedule,
+        action_complete_measurement_schedule,
+        call_from_thread,
     ):
         self.main_console = main_console
         self.measurement_schedule = measurement_schedule
+        self.action_wait_input_measurement_schedule = (
+            action_wait_input_measurement_schedule
+        )
+        self.action_complete_measurement_schedule = action_complete_measurement_schedule
         self.call_from_thread = call_from_thread
-        self.thread_set_event = thread_set_event
 
     def info(self, contents: str):
         """Send an informational message to the UI."""
@@ -681,7 +742,10 @@ class MessageUI:
         """Trigger a UI update for the measurement schedule."""
         self.call_from_thread(self.measurement_schedule.populate_table)
 
-    def input(self, contents: threading.Event):
+    def input(self, contents: str):
         """Indicate that input is required from the user."""
-        self.call_from_thread(self.main_console.write, "Thread waiting for input.")
-        self.call_from_thread(self.thread_set_event, contents)
+        self.call_from_thread(self.action_wait_input_measurement_schedule, contents)
+
+    def complete(self):
+        """Indicate that the measurement schedule is complete."""
+        self.call_from_thread(self.action_complete_measurement_schedule)
