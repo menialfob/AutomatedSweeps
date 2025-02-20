@@ -31,7 +31,7 @@ Frontpage of the application running in windows terminal
 ### Installing
 
 * Download and install [VLC](https://www.videolan.org/)
-* Download the exe from his project
+* [Download the exe from this project](https://github.com/menialfob/AutomatedSweeps/releases/latest)
 
 ### Executing program
 
