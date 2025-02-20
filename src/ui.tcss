@@ -57,6 +57,19 @@ Screen {
             # margin: 1 1 1 1;
         }
     }
+    #InfoMainArea {
+        #InfoMarkdown {
+            width: 100%;
+        }
+        #Commands {
+            dock: left;
+            width: auto;
+            #back {
+                width: 16;
+                margin: 0 1 1 1;
+            }
+        }
+    }
     #ConfigMainArea {
         layout: grid;
         grid-size: 2;
@@ -130,7 +143,7 @@ Screen {
 
 
 }
-QuitScreen {
+InputScreen {
     align: center middle;
     #dialog {
         grid-size: 2;

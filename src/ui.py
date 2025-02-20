@@ -18,6 +18,7 @@ from textual.widgets import (
     Static,
     Switch,
     Input,
+    Markdown,
 )
 
 from textual import log
@@ -143,6 +144,7 @@ class DefaultScreen(Screen):
     def compose(self) -> ComposeResult:
         with HorizontalGroup(id="MainArea"):
             with VerticalGroup(id="Commands"):
+                yield Button(label="Instructions", id="info", variant="default")
                 yield Button(
                     label="Start measurement",
                     id="start",
@@ -239,6 +241,27 @@ class ServeScreen(Screen):
         yield Footer(id="Footer", show_command_palette=False)
 
 
+class InfoScreen(Screen):
+    def __init__(self) -> None:
+        super().__init__()
+        with open("Instructions.md", "r") as file:
+            self.markdown_instructions = file.read()
+
+    BINDINGS: list[BindingType] = [
+        Binding(
+            "q", "app.quit_safely", "Quit the application", show=True, priority=True
+        ),
+    ]
+
+    def compose(self) -> ComposeResult:
+        with HorizontalGroup(id="InfoMainArea"):
+            with VerticalGroup(id="Commands"):
+                yield Button(label="Back", id="back", variant="default")
+            with VerticalScroll(id="InfoMarkdown"):
+                yield Markdown(self.markdown_instructions)
+        yield Footer(id="Footer", show_command_palette=False)
+
+
 class ConfigScreen(Screen):
     # A channel mapping configuration screen
     BINDINGS: list[BindingType] = [
@@ -268,7 +291,7 @@ class ConfigScreen(Screen):
         yield Footer(id="Footer", show_command_palette=False)
 
 
-class QuitScreen(ModalScreen[bool]):
+class InputScreen(ModalScreen[bool]):
     """Screen with a dialog to quit."""
 
     def __init__(self, input_text: str) -> None:
@@ -294,6 +317,7 @@ class AutoSweepApp(App):
         "DefaultScreen": DefaultScreen,
         "ServeScreen": ServeScreen,
         "ConfigScreen": ConfigScreen,
+        "InfoScreen": InfoScreen,
     }
 
     ENABLE_COMMAND_PALETTE = False
@@ -599,6 +623,9 @@ class AutoSweepApp(App):
         elif event.button.id == "save":
             save_settings(config.selected_channels)
 
+        elif event.button.id == "info":
+            await self.push_screen("InfoScreen")
+
     # def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
     #     """Handles worker completion and updates the UI."""
     #     self.start_button = self.query_one("#start", Button)
@@ -678,7 +705,7 @@ class AutoSweepApp(App):
         # Pause the measurement schedule by clearing the pause event
         self.action_pause_measurement_schedule()
 
-        self.push_screen(QuitScreen(input))
+        self.push_screen(InputScreen(input))
 
     def action_complete_measurement_schedule(self):
         """Completes the measurement schedule."""
