@@ -30,7 +30,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Build the project exe
-        run: uv run pyinstaller --clean --onefile --hidden-import=textual_serve --collect-submodules=textual_serve --icon assets/AutomatedSweeps.ico -y -n  "AutomatedSweeps" --add-data "assets;assets" --add-data "src/ui.tcss:." src/main.py
+        run: uv run pyinstaller --clean --onefile --hidden-import=textual-serve --collect-submodules=textual-serve --icon assets/AutomatedSweeps.ico -y -n  "AutomatedSweeps" --add-data "assets;assets" --add-data "src/ui.tcss:." src/main.py
       
       - uses: actions/upload-artifact@v4
         with:
