@@ -3,19 +3,17 @@ import asyncio
 from textual_serve.server import Server
 
 from utils import get_ip
+import sys
 
 
 def run_server():
     """Starts the server with a new event loop."""
     local_ip = get_ip()
-    # if getattr(sys, "frozen", False):
-    #     server = Server("AutomatedSweeps.exe --serve", host=local_ip)
-    # # When running as an executable
-    # else:
-    #     server = Server("textual run src\main.py --serve", host=local_ip)
-    server = Server(
-        r"C:\Users\jonas\Development\AutomatedSweeps\AutomatedSweeps.exe", host=local_ip
-    )
+    if getattr(sys, "frozen", False):
+        server = Server(r"AutomatedSweeps.exe --serve", host=local_ip)
+    # When running as an executable
+    else:
+        server = Server("textual run src\main.py --serve", host=local_ip)
 
     new_loop = asyncio.new_event_loop()
     asyncio.set_event_loop(new_loop)
