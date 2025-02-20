@@ -242,11 +242,6 @@ class ServeScreen(Screen):
 
 
 class InfoScreen(Screen):
-    def __init__(self) -> None:
-        super().__init__()
-        with open("Instructions.md", "r") as file:
-            self.markdown_instructions = file.read()
-
     BINDINGS: list[BindingType] = [
         Binding(
             "q", "app.quit_safely", "Quit the application", show=True, priority=True
@@ -258,7 +253,7 @@ class InfoScreen(Screen):
             with VerticalGroup(id="Commands"):
                 yield Button(label="Back", id="back", variant="default")
             with VerticalScroll(id="InfoMarkdown"):
-                yield Markdown(self.markdown_instructions)
+                yield Markdown(config.INSTRUCTIONS)
         yield Footer(id="Footer", show_command_palette=False)
 
 
