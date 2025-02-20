@@ -2,3 +2,4 @@ build/
 dist/
 settings.json
 __pycache__/
+experiment.py
