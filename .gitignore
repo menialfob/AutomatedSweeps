@@ -3,3 +3,4 @@ dist/
 settings.json
 __pycache__/
 experiment.py
+AutomatedSweeps.exe
