@@ -13,8 +13,7 @@ def run_server():
         server = Server(r"AutomatedSweeps.exe --serve", host=local_ip)
     # When running as an executable
     else:
-        # server = Server("textual run src\main.py --serve", host=local_ip)
-        server = Server(r"AutomatedSweeps.exe --serve", host=local_ip)
+        server = Server("textual run src\main.py --serve", host=local_ip)
 
     new_loop = asyncio.new_event_loop()
     asyncio.set_event_loop(new_loop)
