@@ -1,0 +1,1296 @@
+openapi: 3.0.0
+info:
+  title: REW API
+  description: API for controlling and interacting with Room EQ Wizard (REW)
+  version: 1.0.0
+servers:
+  - url: http://localhost:4735
+    description: Localhost REW API server
+tags:
+  - name: application
+    description: Commands for controlling the REW application
+  - name: audio
+    description: Commands for managing audio settings
+  - name: input-levels
+    description: Commands for monitoring input levels
+  - name: measurements
+    description: Commands for managing measurements
+  - name: measure
+    description: Commands for performing measurements
+components:
+  schemas:
+    MeasurementSummary:
+      type: object
+      properties:
+        title:
+          type: string
+        notes:
+          type: string
+        date:
+          type: string
+        uuid:
+          type: string
+        startFreq:
+          type: number
+        endFreq:
+          type: number
+        inverted:
+          type: boolean
+        rewVersion:
+          type: string
+        timingReference:
+          type: string
+        delay:
+          type: number
+        timingOffset:
+          type: number
+        signalToNoisedB:
+          type: number
+        splOffsetdB:
+          type: number
+        alignSPLOffsetdB:
+          type: number
+        cumulativeIRShiftSeconds:
+          type: number
+        clockAdjustmentPPM:
+          type: number
+        timeOfIRStartSeconds:
+          type: number
+        timeOfIRPeakSeconds:
+          type: number
+paths:
+  /application/commands:
+    get:
+      tags:
+        - application
+      summary: Get application commands
+      description: Returns the list of available application commands.
+      responses:
+        '200':
+          description: Successfully retrieved commands
+  /application/command:
+    post:
+      tags:
+        - application
+      summary: Issue application command
+      description: Sends a command to control REW application settings.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+      responses:
+        '200':
+          description: Command executed successfully
+  /application/errors:
+    get:
+      tags:
+        - application
+      summary: Get logged errors
+      description: Returns a list of error messages logged by REW.
+      responses:
+        '200':
+          description: Successfully retrieved errors
+  /application/last-error:
+    get:
+      tags:
+        - application
+      summary: Get last logged error
+      description: Returns the most recent error message.
+      responses:
+        '200':
+          description: Successfully retrieved last error
+  /application/warnings:
+    get:
+      tags:
+        - application
+      summary: Get logged warnings
+      description: Returns a list of warning messages logged by REW.
+      responses:
+        '200':
+          description: Successfully retrieved warnings
+  /application/last-warning:
+    get:
+      tags:
+        - application
+      summary: Get last logged warning
+      description: Returns the most recent warning message.
+      responses:
+        '200':
+          description: Successfully retrieved last warning
+  /application/blocking:
+    post:
+      tags:
+        - application
+      summary: Enable or disable blocking mode
+      description: Enables or disables blocking mode for API commands.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Blocking mode updated successfully
+  /application/inhibit-graph-updates:
+    post:
+      tags:
+        - application
+      summary: Inhibit graph updates
+      description: Prevents graph updates while modifying measurements.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Graph update inhibition updated successfully
+  /application/logging:
+    post:
+      tags:
+        - application
+      summary: Enable or disable API message logging
+      description: Logs API messages to rew_output.txt in the REW log files folder.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Logging updated successfully
+  /audio:
+    get:
+      tags:
+        - audio
+      summary: Get audio settings
+      description: Retrieves the current audio settings for REW.
+      responses:
+        '200':
+          description: Audio settings retrieved successfully
+  /audio/driver:
+    get:
+      tags:
+        - audio
+      summary: Get selected audio driver
+      description: Returns the currently selected audio driver.
+      responses:
+        '200':
+          description: Successfully retrieved audio driver
+    post:
+      tags:
+        - audio
+      summary: Set audio driver
+      description: Sets the selected audio driver.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                driver:
+                  type: string
+      responses:
+        '200':
+          description: Audio driver updated successfully
+  /audio/samplerate:
+    get:
+      tags:
+        - audio
+      summary: Get sample rate
+      description: Returns the current sample rate.
+      responses:
+        '200':
+          description: Successfully retrieved sample rate
+    post:
+      tags:
+        - audio
+      summary: Set sample rate
+      description: Updates the sample rate for REW.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                samplerate:
+                  type: integer
+      responses:
+        '200':
+          description: Sample rate updated successfully
+  /audio/input-cal:
+    get:
+      tags:
+        - audio
+      summary: Get input calibration configuration
+      description: Retrieves the current input calibration settings.
+      responses:
+        '200':
+          description: Successfully retrieved input calibration settings
+    put:
+      tags:
+        - audio
+      summary: Update input calibration settings
+      description: Updates the input calibration configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Input calibration updated successfully
+  /audio/output-cal:
+    get:
+      tags:
+        - audio
+      summary: Get output calibration configuration
+      description: Retrieves the current output calibration settings.
+      responses:
+        '200':
+          description: Successfully retrieved output calibration settings
+    put:
+      tags:
+        - audio
+      summary: Update output calibration settings
+      description: Updates the output calibration configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Output calibration updated successfully
+  /audio/java/input-device:
+    get:
+      tags:
+        - audio
+      summary: Get Java input device
+      description: Returns the current Java input device.
+      responses:
+        '200':
+          description: Successfully retrieved Java input device
+    post:
+      tags:
+        - audio
+      summary: Set Java input device
+      description: Sets the Java input device.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+      responses:
+        '200':
+          description: Java input device updated successfully
+  /audio/java/output-device:
+    get:
+      tags:
+        - audio
+      summary: Get Java output device
+      description: Returns the current Java output device.
+      responses:
+        '200':
+          description: Successfully retrieved Java output device
+    post:
+      tags:
+        - audio
+      summary: Set Java output device
+      description: Sets the Java output device.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+      responses:
+        '200':
+          description: Java output device updated successfully
+  /audio/java/input-channel:
+    get:
+      tags:
+        - audio
+      summary: Get Java input channel
+      description: Returns the current Java input channel.
+      responses:
+        '200':
+          description: Successfully retrieved Java input channel
+    post:
+      summary: Set Java input channel
+      description: Sets the Java input channel.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: integer
+      responses:
+        '200':
+          description: Java input channel updated successfully
+  /audio/java/output-channel:
+    get:
+      tags:
+        - audio
+      summary: Get Java output channel
+      description: Returns the current Java output channel.
+      responses:
+        '200':
+          description: Successfully retrieved Java output channel
+    post:
+      tags:
+        - audio
+      summary: Set Java output channel
+      description: Sets the Java output channel.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel:
+                  type: string
+      responses:
+        '200':
+          description: Java output channel updated successfully
+  /audio/java/output-channel-mapping:
+    get:
+      tags:
+        - audio
+      summary: Get Java output channel mapping
+      description: Returns the current Java output channel mapping.
+      responses:
+        '200':
+          description: Successfully retrieved Java output channel mapping
+    post:
+      tags:
+        - audio
+      summary: Set Java output channel mapping
+      description: Updates the Java output channel mapping.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mapping:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Java output channel mapping updated successfully
+  /audio/java/stereo-only:
+    get:
+      tags:
+        - audio
+      summary: Get stereo-only mode status
+      description: Returns whether Java driver is restricted to stereo-only mode.
+      responses:
+        '200':
+          description: Successfully retrieved stereo-only mode status
+    post:
+      tags:
+        - audio
+      summary: Enable or disable stereo-only mode
+      description: Updates the stereo-only mode setting for Java driver.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Stereo-only mode updated successfully
+  /audio/asio/device:
+    get:
+      tags:
+        - audio
+      summary: Get ASIO device
+      description: Returns the current ASIO device.
+      responses:
+        '200':
+          description: Successfully retrieved ASIO device
+    post:
+      tags:
+        - audio
+      summary: Set ASIO device
+      description: Sets the ASIO device.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                device:
+                  type: string
+      responses:
+        '200':
+          description: ASIO device updated successfully
+  /audio/asio/input:
+    get:
+      tags:
+        - audio
+      summary: Get ASIO input
+      description: Returns the current ASIO input.
+      responses:
+        '200':
+          description: Successfully retrieved ASIO input
+    post:
+      tags:
+        - audio
+      summary: Set ASIO input
+      description: Sets the ASIO input.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: string
+      responses:
+        '200':
+          description: ASIO input updated successfully
+  /audio/asio/output:
+    get:
+      tags:
+        - audio
+      summary: Get ASIO output
+      description: Returns the current ASIO output.
+      responses:
+        '200':
+          description: Successfully retrieved ASIO output
+    post:
+      tags:
+        - audio
+      summary: Set ASIO output
+      description: Sets the ASIO output.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                output:
+                  type: string
+      responses:
+        '200':
+          description: ASIO output updated successfully
+  /audio/asio/secondary-output-enable:
+    post:
+      tags:
+        - audio
+      summary: Enable secondary ASIO output
+      description: Enables a second ASIO output channel.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Secondary ASIO output enabled successfully
+  /audio/asio/secondary-output:
+    get:
+      tags:
+        - audio
+      summary: Get secondary ASIO output
+      description: Returns the secondary ASIO output setting.
+      responses:
+        '200':
+          description: Successfully retrieved secondary ASIO output
+    post:
+      tags:
+        - audio
+      summary: Set secondary ASIO output
+      description: Configures the secondary ASIO output channel.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                output:
+                  type: string
+      responses:
+        '200':
+          description: Secondary ASIO output updated successfully
+  /input-levels:
+    get:
+      tags:
+        - input-levels
+      summary: Get input levels
+      description: Retrieves the current input levels when monitoring is active.
+      responses:
+        '200':
+          description: Successfully retrieved input levels
+    post:
+      tags:
+        - input-levels
+      summary: Start or stop input level monitoring
+      description: Starts or stops monitoring input levels.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+      responses:
+        '200':
+          description: Input level monitoring updated successfully
+  /input-levels/last-levels:
+    get:
+      tags:
+        - input-levels
+      summary: Get last input levels update
+      description: Returns the last recorded input levels update.
+      responses:
+        '200':
+          description: Successfully retrieved last input levels
+  /input-levels/subscribe:
+    post:
+      tags:
+        - input-levels
+      summary: Subscribe to input level updates
+      description: Adds a subscription for input level updates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL to receive notifications
+                parameters:
+                  type: object
+                  description: Optional parameters (e.g., unit)
+      responses:
+        '200':
+          description: Subscription added successfully
+  /input-levels/units:
+    get:
+      tags:
+        - input-levels
+      summary: Get available input level units
+      description: Returns a list of supported units for input level values.
+      responses:
+        '200':
+          description: Successfully retrieved input level units
+  /measurements:
+    get:
+      tags:
+        - measurements
+      summary: Retrieve list of measurements
+      description: Fetches the list of available measurements.
+      responses:
+        '200':
+          description: Successfully retrieved measurements
+    delete:
+      tags:
+        - measurements
+      summary: Delete all measurements
+      description: Removes all measurements from REW.
+      responses:
+        '204':
+          description: All measurements deleted successfully
+  /measurements/{id}:
+    get:
+      tags:
+        - measurements
+      summary: Get measurement details
+      description: Fetches detailed information for a specific measurement.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Measurement details retrieved successfully
+    delete:
+      tags:
+        - measurements
+      summary: Delete a measurement
+      description: Removes a specified measurement.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Measurement deleted successfully
+    put:
+      tags:
+        - measurements
+      summary: Update measurement name or notes
+      description: Updates the name or notes of a measurement.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: New title for the measurement
+                notes:
+                  type: string
+                  description: Notes to associate with the measurement
+      responses:
+        '200':
+          description: Measurement updated successfully
+  /measurements/commands:
+    get:
+      tags:
+        - measurements
+      summary: Get available measurement commands
+      description: Returns a list of commands that can be issued for measurements.
+      responses:
+        '200':
+          description: Successfully retrieved measurement commands
+  /measurements/command:
+    post:
+      tags:
+        - measurements
+      summary: Execute a measurement command
+      description: Issues a command to process measurements, such as loading or saving.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+                  description: The command to execute
+                parameters:
+                  type: array
+                  items:
+                    type: string
+                  description: Command parameters
+      responses:
+        '200':
+          description: Measurement command executed successfully
+  /measurements/subscribe:
+    post:
+      tags:
+        - measurements
+      summary: Subscribe to measurement updates
+      description: Adds a subscription for measurement updates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: The URL to receive notifications
+      responses:
+        '200':
+          description: Subscription added successfully
+  /measurements/selected-uuid:
+    get:
+      tags:
+        - measurements
+      summary: Get selected measurement UUID
+      description: Returns the UUID of the currently selected measurement.
+      responses:
+        '200':
+          description: Successfully retrieved selected measurement UUID
+    post:
+      tags:
+        - measurements
+      summary: Select a measurement by UUID
+      description: Sets the selected measurement by UUID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+      responses:
+        '200':
+          description: Measurement selection updated successfully
+  /measurements/selected:
+    get:
+      tags:
+        - measurements
+      summary: Get selected measurement index
+      description: Returns the index of the currently selected measurement.
+      responses:
+        '200':
+          description: Successfully retrieved selected measurement index
+    post:
+      tags:
+        - measurements
+      summary: Select a measurement by index
+      description: Sets the selected measurement by index.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                index:
+                  type: integer
+      responses:
+        '200':
+          description: Measurement selection updated successfully
+  /measurements/{id}/frequency-response:
+    get:
+      tags:
+        - measurements
+      summary: Get frequency response
+      description: |
+        Retrieves the frequency response for a given measurement. The response includes smoothing settings, start frequency, points-per-octave for log-spaced data, or a frequency step value for linear-spaced data. Magnitude and phase data are Base64-encoded.
+        
+        - Default unit: SPL
+        - Other units available via `?unit=dBFS`
+        - Smoothing settings can be specified via `?smoothing=1/12`
+        - Log-spaced data can be forced with `?ppo=96`
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unit
+          in: query
+          schema:
+            type: string
+          description: Specify the unit for magnitude data (e.g., SPL, dBFS)
+        - name: smoothing
+          in: query
+          schema:
+            type: string
+          description: Set smoothing level (e.g., "1/12")
+        - name: ppo
+          in: query
+          schema:
+            type: integer
+          description: Set points-per-octave for log-spaced data
+      responses:
+        '200':
+          description: Frequency response retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  smoothing:
+                    type: string
+                  startFrequency:
+                    type: number
+                  pointsPerOctave:
+                    type: number
+                  frequencyStep:
+                    type: number
+                  magnitudeData:
+                    type: string
+                    description: Base64-encoded magnitude values
+                  phaseData:
+                    type: string
+                    description: Base64-encoded phase values
+  /measurements/{id}/impulse-response:
+    get:
+      tags:
+        - measurements
+      summary: Get impulse response
+      description: |
+        Retrieves the impulse response for a given measurement. The response includes start time, timing reference, sample interval, sample rate, and response data as a Base64-encoded string.
+        
+        - Default unit: Percent
+        - Other units available via `?unit=dBFS`
+        - Windowed data available via `?windowed=true`
+        - Normalized data by default; non-normalized available via `?normalised=false`
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unit
+          in: query
+          schema:
+            type: string
+          description: Specify the unit for impulse response data (e.g., Percent, dBFS)
+        - name: windowed
+          in: query
+          schema:
+            type: boolean
+          description: Whether to return the windowed portion of the impulse response
+        - name: normalised
+          in: query
+          schema:
+            type: boolean
+          description: Whether to return normalized or non-normalized data
+      responses:
+        '200':
+          description: Impulse response retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  startTime:
+                    type: number
+                  timingReference:
+                    type: string
+                  sampleInterval:
+                    type: number
+                  sampleRate:
+                    type: number
+                  responseData:
+                    type: string
+                    description: Base64-encoded impulse response data
+  /measurements/{id}/filters-impulse-response:
+    get:
+      tags:
+        - measurements
+      summary: Get filters impulse response
+      description: |
+        Retrieves the impulse response of a measurement's filters. The sample rate and response length must be specified in the request.
+        
+        - Maximum response length: 4,194,304 samples
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: samplerate
+          in: query
+          schema:
+            type: integer
+          description: The sample rate in Hz
+        - name: length
+          in: query
+          schema:
+            type: integer
+          description: The length of the impulse response in samples
+      responses:
+        '200':
+          description: Filters impulse response retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  startTime:
+                    type: number
+                  sampleInterval:
+                    type: number
+                  sampleRate:
+                    type: number
+                  responseData:
+                    type: string
+                    description: Base64-encoded filters impulse response data
+  /measurements/{id}/distortion:
+    get:
+      tags:
+        - measurements
+      summary: Get distortion data
+      description: |
+        Retrieves the distortion data for a given measurement. The response includes a description of the data type, an array of column headers, and a 2D array of numerical data.
+        
+        - Default unit: Percent
+        - Other units available via `?unit=dBr`
+        - Sweep distortion data can be returned at a specific points-per-octave (PPO) value using `?ppo=12`
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: unit
+          in: query
+          schema:
+            type: string
+          description: Specify the unit for distortion data (e.g., Percent, dBr)
+        - name: ppo
+          in: query
+          schema:
+            type: integer
+          description: Set points-per-octave for sweep distortion data
+      responses:
+        '200':
+          description: Distortion data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  columnHeaders:
+                    type: array
+                    items:
+                      type: string
+                  data:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: number
+  /measure:
+    get:
+      tags:
+        - measure
+      summary: Retrieve available measurement commands
+      description: Fetches a list of available measurement commands.
+      responses:
+        '200':
+          description: Successfully retrieved commands
+    post:
+      tags:
+        - measure
+      summary: Execute measurement command
+      description: Issues a command to perform a measurement operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+      responses:
+        '200':
+          description: Measurement command executed successfully
+  /measure/naming:
+    get:
+      tags:
+        - measure
+      summary: Get measurement naming settings
+      description: Retrieves the current measurement naming settings.
+      responses:
+        '200':
+          description: Successfully retrieved naming settings
+    post:
+      tags:
+        - measure
+      summary: Update measurement naming settings
+      description: Updates the measurement naming format.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+      responses:
+        '200':
+          description: Naming settings updated successfully
+  /measure/notes:
+    get:
+      tags:
+        - measure
+      summary: Get measurement notes
+      description: Retrieves the current measurement notes.
+      responses:
+        '200':
+          description: Successfully retrieved notes
+    post:
+      tags:
+        - measure
+      summary: Update measurement notes
+      description: Updates the notes for the next measurement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Notes updated successfully
+  /measure/level:
+    get:
+      tags:
+        - measure
+      summary: Get measurement level
+      description: Retrieves the current measurement level.
+      responses:
+        '200':
+          description: Successfully retrieved measurement level
+    post:
+      tags:
+        - measure
+      summary: Set measurement level
+      description: Updates the measurement level.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                level:
+                  type: number
+                unit:
+                  type: string
+      responses:
+        '200':
+          description: Measurement level updated successfully
+  /measure/protection-options:
+    get:
+      tags:
+        - measure
+      summary: Get protection options
+      description: Retrieves the current protection options.
+      responses:
+        '200':
+          description: Successfully retrieved protection options
+    post:
+      tags:
+        - measure
+      summary: Update protection options
+      description: Updates the settings for aborting measurements due to clipping or SPL limits.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Protection options updated successfully
+  /measure/sweep/configuration:
+    get:
+      tags:
+        - measure
+      summary: Get sweep configuration
+      description: Retrieves the current sweep configuration.
+      responses:
+        '200':
+          description: Successfully retrieved sweep configuration
+    post:
+      tags:
+        - measure
+      summary: Update sweep configuration
+      description: Updates the measurement sweep configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Sweep configuration updated successfully
+  /measure/sweep/repetitions:
+    get:
+      tags:
+        - measure
+      summary: Get sweep repetitions
+      description: Retrieves the current repetitions configuration.
+      responses:
+        '200':
+          description: Successfully retrieved repetitions configuration
+    post:
+      tags:
+        - measure
+      summary: Update repetitions
+      description: Updates the measurement repetitions configuration.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Sweep repetitions configuration updated successfully
+  /measure/timing/reference:
+    get:
+      tags:
+        - measure
+      summary: Get timing reference settings
+      description: Retrieves settings for the timing reference.
+      responses:
+        '200':
+          description: Successfully retrieved timing reference settings
+    post:
+      tags:
+        - measure
+      summary: Update timing reference settings
+      description: Updates settings for the timing reference.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Timing reference configuration updated successfully
+  /measure/playback-mode:
+    get:
+      tags:
+        - measure
+      summary: Get playback mode
+      description: Retrieves the playback mode for measurements.
+      responses:
+        '200':
+          description: Successfully retrieved the playback mode
+    post:
+      tags:
+        - measure
+      summary: Set playback mode
+      description: Updates the playback mode for measurements.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+      responses:
+        '200':
+          description: Playback mode updated successfully
+  /measure/start-delay:
+    get:
+      tags:
+        - measure
+      summary: Get start delay
+      description: Retrieves the start delay for measurements.
+      responses:
+        '200':
+          description: Successfully retrieved start delay
+    post:
+      tags:
+        - measure
+      summary: Set start delay
+      description: Sets the delay before a measurement starts.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                delay:
+                  type: number
+      responses:
+        '200':
+          description: Start delay updated successfully
+  /measure/capture-noise-floor:
+    get:
+      tags:
+        - measure
+      summary: Get capture noise floor
+      description: Retrieves the setting for capturing the noise floor before a measurement.
+      responses:
+        '200':
+          description: Successfully retrieved noise floor setting
+    post:
+      tags:
+        - measure
+      summary: Set capture noise floor
+      description: Enables or disables capturing the noise floor before a measurement.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enable:
+                  type: boolean
+      responses:
+        '200':
+          description: Noise floor capture setting updated successfully
+  /measure/subscribe:
+    post:
+      tags:
+        - measure
+      summary: Subscribe to measurement progress
+      description: Subscribes to notifications about measurement progress.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+      responses:
+        '200':
+          description: Subscription added successfully

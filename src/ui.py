@@ -8,7 +8,6 @@ from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Footer,
-    Header,
     Label,
     Link,
     OptionList,
@@ -142,7 +141,6 @@ class DefaultScreen(Screen):
     ]
 
     def compose(self) -> ComposeResult:
-        yield Header(id="Header")
         with HorizontalGroup(id="MainArea"):
             with VerticalGroup(id="Commands"):
                 yield Button(
@@ -227,7 +225,6 @@ class ServeScreen(Screen):
 
     # A screen showing the user that the app is currently being served at a remote IP
     def compose(self) -> ComposeResult:
-        yield Header(id="Header")
         with HorizontalGroup(id="ServeMainArea"):
             with VerticalGroup(id="Commands"):
                 yield Button(label="Stop serving & quit", id="quit", variant="default")
@@ -257,7 +254,6 @@ class ConfigScreen(Screen):
     channels = reactive(config.selected_channels, recompose=True, layout=True)
 
     def compose(self) -> ComposeResult:
-        yield Header(id="Header")
         with HorizontalGroup(id="ConfigMainArea"):
             with VerticalGroup(id="Commands"):
                 yield Button(label="Back", id="back", variant="default")
@@ -299,6 +295,8 @@ class AutoSweepApp(App):
         "ServeScreen": ServeScreen,
         "ConfigScreen": ConfigScreen,
     }
+
+    ENABLE_COMMAND_PALETTE = False
 
     async def on_mount(self) -> None:
         self.title = "Automated Sweeps"

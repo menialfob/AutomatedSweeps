@@ -25,6 +25,12 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
 
         successful_step = False
 
+        # Update the status of the current step
+        config.measurement_schedule[current_step]["Status"] = (
+            "[yellow]In progress[/yellow]"
+        )
+        message_ui.update()
+
         match config.measurement_schedule[current_step]["Description"]:
             case "Check REW settings":
                 # Checking if REW API is running
@@ -48,10 +54,9 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
                         break  # Exit loop if settings are correct
 
                     # Show errors to the user
-                    error_message = "REW settings are incorrect:\n" + "\n".join(errors)
-                    message_ui.input(
-                        error_message + "\n\nPlease adjust settings and press OK."
-                    )
+                    for error in errors:
+                        message_ui.input(error)
+                        pause_event.wait()
 
                     pause_event.wait()
 
@@ -97,6 +102,17 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
                         )
                     pause_event.wait()
                     current_step -= 2
+            case "Measure sweep":
+                successful_step = sweep_and_check_problems(
+                    config.measurement_schedule[current_step]["Channel"],
+                    config.measurement_schedule[current_step]["Iteration"],
+                    config.measurement_schedule[current_step]["Position"],
+                    config.measurement_schedule[current_step]["Audio played"],
+                    message_ui,
+                    pause_event,
+                    stop_event,
+                    max_attempts=3,
+                )
         # Check for control events and break if stop_event is set.
         if check_control_events(pause_event, stop_event, message_ui):
             break

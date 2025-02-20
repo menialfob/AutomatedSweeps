@@ -20,27 +20,56 @@ def ensure_rew_api():
 
 
 def ensure_rew_settings():
-    """Check REW settings and ensure they match expected values."""
+    """Check REW settings and ensure they match expected values with explanations."""
     ENDPOINTS = {
         "/measure/naming": {
-            "namingOption": "Use as entered",
-            "prefixMeasNameWithOutput": False,
+            "namingOption": {
+                "expected": "Use as entered",
+                "readableExplanation": "The naming option radio-buttons in Measure should be set to 'Use as entered'.",
+            },
+            "prefixMeasNameWithOutput": {
+                "expected": False,
+                "readableExplanation": "The checkbox 'Prefix with output' in Measure should be unchecked.",
+            },
         },
-        "/measure/playback-mode": {"message": "From file"},
+        "/measure/playback-mode": {
+            "message": {
+                "expected": "From file",
+                "readableExplanation": "Playback mode in Measure should be set to 'From file'.",
+            }
+        },
+        "/measure/protection-options": {
+            "clippingAbort": {
+                "expected": True,
+                "readableExplanation": "The checkbox 'Abort if heavy input clipping occurs' in Measure should be checked.",
+            }
+        },
+        "/measure/capture-noise-floor": {
+            "body": {
+                "expected": True,
+                "readableExplanation": "The checkbox 'Capture noise floor' in Measure should be checked.",
+            }
+        },
     }
     errors = []
 
     for endpoint, expected_values in ENDPOINTS.items():
         try:
             response = requests.get(f"{BASE_URL_ENDPOINT}{endpoint}").json()
+            # If the response is a boolean, convert it into an object
+            if type(response) is bool:
+                response = {"body": response}
         except Exception as e:
             errors.append(f"Failed to fetch {endpoint}: {str(e)}")
             continue
 
-        for key, expected_value in expected_values.items():
+        for key, value in expected_values.items():
+            expected_value = value["expected"]
+            explanation = value["readableExplanation"]
+
             if response.get(key) != expected_value:
                 errors.append(
-                    f"{endpoint}: {key} should be {expected_value}, got {response.get(key)}"
+                    f"{explanation} it is currently set to {response.get(key)}. "
                 )
 
     return errors
