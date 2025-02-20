@@ -594,8 +594,7 @@ class AutoSweepApp(App):
             self.serve_url.update("http://" + get_ip() + ":8000")
 
         elif event.button.id == "quit":
-            self.main_console.write("Stopping server...")
-            self.action_quit_safely()
+            await self.action_quit_safely()
 
         elif event.button.id == "save":
             save_settings(config.selected_channels)
