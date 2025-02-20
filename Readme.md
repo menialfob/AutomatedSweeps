@@ -16,11 +16,6 @@ The tool is intended to be used to measure speaker responses in REW for use with
 * Automatic checks and retries of bad measurements
 * Microphone-centering tool
 
-### Preview
-Frontpage of the application running in windows terminal
-
-![Product Name Screen Shot][application-screenshot]
-
 ## Getting Started
 
 ### Dependencies
@@ -44,6 +39,15 @@ Frontpage of the application running in windows terminal
 * Configure your speaker setup
 * Run the measurement schedule
 
+### Preview
+Frontpage of the application running in windows terminal
+
+![Product Name Screen Shot][application-screenshot]
+
+Frontpage of the application served in browser on mobile device
+
+![Product Name Screen Shot][application-phone-screenshot]
+
 ## Help
 
 If you encounter any issues, then submit an [issue in this repository](https://github.com/menialfob/AutomatedSweeps/issues).
@@ -60,4 +64,5 @@ Created for
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [application-logo]: assets/AutomatedSweeps.ico
-[application-screenshot]: ApplicationFrontpage.png
+[application-screenshot]: images/ApplicationFrontpage.png
+[application-phone-screenshot]: images/ApplicationPhoneFrontpage.png
