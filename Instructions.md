@@ -10,7 +10,7 @@ AutomatedSweeps is an application designed to help you configure and run measure
   - **VLC Media Player** (Required for playing lossless Atmos audio files)
 - **AVR Setup**:
   - Needs to be configured for measurement.
-  - Use the `ODD.wtf` file from the **OCA library** for setting your AVR in measurement mode.
+  - Use the `ODD.wtf` file from the **OCA A1 Neuron Folder** for setting your AVR in measurement mode.
 
 ## Getting Started
 ### 1. Initial Setup
