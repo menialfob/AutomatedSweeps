@@ -1,4 +1,5 @@
 import sys
+import os
 
 from textual.app import ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup, VerticalScroll, Grid
@@ -21,6 +22,7 @@ from textual.widgets import (
     Markdown,
 )
 
+import subprocess
 from textual import log
 
 from rich.table import Table
@@ -35,8 +37,7 @@ import threading
 
 from textual.app import App
 
-from serve import run_server
-from utils import get_ip, load_settings, save_settings
+from utils import load_settings, save_settings
 from collections import OrderedDict
 
 
@@ -156,7 +157,7 @@ class DefaultScreen(Screen):
                 )
                 yield Button(label="Setup", id="configure", variant="default")
                 yield Button(label="Load settings", id="load", variant="default")
-                if "--serve" not in sys.argv:
+                if "--noservebtn" not in sys.argv:
                     yield Button(label="Serve remotely", id="serve", variant="default")
             with VerticalGroup(id="Overview"):
                 with VerticalGroup(id="Selections"):
@@ -606,11 +607,29 @@ class AutoSweepApp(App):
         elif event.button.id == "serve":
             self.main_console = self.query_one("#ConsoleLog", RichLog)
             self.main_console.write("Starting server...")
-            thread = threading.Thread(target=run_server, daemon=True)
-            thread.start()
-            await self.push_screen("ServeScreen")
-            self.serve_url = self.query_one("#ServeUrl", Link)
-            self.serve_url.update("http://" + get_ip() + ":8000")
+            # self.app_event_loop = asyncio.get_event_loop()
+            # await self.app_event_loop.stop()
+            self.exit()
+            # Clear the terminal (cross-platform)
+            os.system("cls || clear")
+            print()
+
+            if getattr(sys, "frozen", False):  # Running as an executable
+                subprocess.run(["AutomatedSweeps.exe", "--serve"])
+            else:  # Running as a Python script
+                subprocess.run(
+                    ["uv", "run", "textual", "run", "--dev", "src/main.py", "--serve"]
+                )
+
+            # run_server()
+        # elif event.button.id == "serve":
+        #     self.main_console = self.query_one("#ConsoleLog", RichLog)
+        #     self.main_console.write("Starting server...")
+        #     thread = threading.Thread(target=run_server, daemon=True)
+        #     thread.start()
+        #     await self.push_screen("ServeScreen")
+        #     self.serve_url = self.query_one("#ServeUrl", Link)
+        #     self.serve_url.update("http://" + get_ip() + ":8000")
 
         elif event.button.id == "quit":
             await self.action_quit_safely()
