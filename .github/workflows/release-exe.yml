@@ -28,7 +28,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Build the project exe
-        run: uv run pyinstaller --clean --onefile --collect-all=textual_serve --icon assets/AutomatedSweeps.ico -y -n "AutomatedSweeps" --add-data "assets;assets" --add-data "src/ui.tcss:." src/main.py
+        run: uv run pyinstaller --clean --onefile --collect-all=textual_serve --collect-all=textual --icon assets/AutomatedSweeps.ico -y -n "AutomatedSweeps" --add-data "assets;assets" --add-data "src/ui.tcss:." src/main.py
 
       - name: Append Asset to Release
         uses: softprops/action-gh-release@v2
