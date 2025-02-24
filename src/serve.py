@@ -13,7 +13,7 @@ def run_server():
     else:
         server = Server("textual run src\main.py --noservebtn", host=local_ip)
 
-    server.serve()
+    server.serve(debug=True)
 
 
 # def run_server():

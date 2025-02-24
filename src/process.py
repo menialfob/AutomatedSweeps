@@ -25,6 +25,10 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
 
         successful_step = False
 
+        message_ui.info(
+            f"{config.PRINTFORMAT['INFO']} Running step: {config.measurement_schedule[current_step]['Description']}"
+        )
+
         # Update the status of the current step
         config.measurement_schedule[current_step]["Status"] = (
             "[yellow]In progress[/yellow]"
@@ -34,6 +38,9 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
         match config.measurement_schedule[current_step]["Description"]:
             case "Check REW settings":
                 # Checking if REW API is running
+                message_ui.info(
+                    f"{config.PRINTFORMAT['INFO']} Checking if REW API is running"
+                )
                 while not ensure_rew_api():
                     # Check for control events and break if stop_event is set.
                     if check_control_events(pause_event, stop_event, message_ui):
@@ -44,6 +51,9 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
                     pause_event.wait()
 
                 # Checking if some of the REW settings are correct
+                message_ui.info(
+                    f"{config.PRINTFORMAT['INFO']} Checking REW measurement settings"
+                )
                 while True:
                     # Check for control events and break if stop_event is set.
                     if check_control_events(pause_event, stop_event, message_ui):
@@ -59,8 +69,10 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
                         pause_event.wait()
 
                     pause_event.wait()
-
                 # Checking if measure button is visible. This already contains a loop to inform user move window if necessary.
+                message_ui.info(
+                    f"{config.PRINTFORMAT['INFO']} Checking if measure button is visible"
+                )
                 get_button_position(
                     "MeasureButton.png", message_ui, pause_event, stop_event
                 )
@@ -88,10 +100,13 @@ def run_workflow(message_ui: MessageUI, pause_event: Event, stop_event: Event):
                 fr_fl_distance = get_microphone_distance(uuids["FR"], uuids["FL"])
                 if abs(fr_fl_distance) < 4:
                     message_ui.info(
-                        f"The microphone is positioned correctly within the error margin of 3 cm. (Distance from center: {abs(fr_fl_distance)} cm)"
+                        f"{config.PRINTFORMAT['OK']} The microphone is positioned correctly within the error margin of 3 cm. (Distance from center: {abs(fr_fl_distance)} cm)"
                     )
                     successful_step = True
                 else:
+                    message_ui.info(
+                        f"{config.PRINTFORMAT['WARNING']} The microphone is positioned coutside the error margin of 3 cm. (Distance from center: {abs(fr_fl_distance)} cm)"
+                    )
                     if fr_fl_distance < 0:
                         message_ui.input(
                             f"Move the microphone {abs(fr_fl_distance)} cm ({round(abs(fr_fl_distance) / 2.54, 2)} in) to the right speaker"
@@ -172,14 +187,22 @@ def sweep_and_check_problems(
         if check_control_events(pause_event, stop_event, message_ui):
             break
 
+        message_ui.info(
+            f"{config.PRINTFORMAT['INFO']} Checking for new problems after sweep"
+        )
         new_problem_times, problems = check_new_problems(previous_problem_times)
 
         if not new_problem_times:
-            message_ui.info("No new problems detected. Sweep successful.")
+            message_ui.info(
+                f"{config.PRINTFORMAT['OK']} No new problems detected. Sweep successful."
+            )
             return True
-        message_ui.info(f"New problem detected: {problems[-1]['title']}")
+        message_ui.info(
+            f"{config.PRINTFORMAT['WARNING']} New problem detected: {problems[-1]['title']}"
+        )
 
         # Deleting bad measurement
+        message_ui.info(f"{config.PRINTFORMAT['INFO']} Deleting bad measurement")
         delete_measurement(get_selected_measurement_uuid())
 
         # Check for control events and break if stop_event is set.

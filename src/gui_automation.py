@@ -83,7 +83,7 @@ def run_sweep(
     # Pause if the channel is SW2, SW3, or SW4
     if channel is audio_file and channel in {"SW2", "SW3", "SW4"}:
         # Use message_ui to inform the user to switch cables
-        message_ui.info(
+        message_ui.input(
             f"Please plug your {channel} into SW1 and press Enter to continue..."
         )
         # Pause until the user is ready to measure
@@ -93,7 +93,9 @@ def run_sweep(
     # Check for control events and return if stop_event is set.
     if check_control_events(pause_event, stop_event, message_ui):
         return
-
+    message_ui.info(
+        f"{config.PRINTFORMAT['INFO']} Playing sweep for {channel} (Position: {position} - Iteration: {iteration})"
+    )
     pyautogui.click(*start_button_rew)
     play_sweep(f"{'SWx' if audio_file.startswith('SW') else audio_file}")
     time.sleep(2)  # Wait for measurement to complete

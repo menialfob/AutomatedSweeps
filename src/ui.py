@@ -40,6 +40,8 @@ from textual.app import App
 from utils import load_settings, save_settings
 from collections import OrderedDict
 
+import datetime
+
 
 class MeasurementSchedule(Static):
     """A list of measurement steps."""
@@ -341,13 +343,7 @@ class AutoSweepApp(App):
             "This program uses a combination of APIs and screen interaction to automate sweep measurements as much as possible. It is designed to be used in conjunction with ObsessiveCompulsiveAudiophile's A1 Neuron Room Audio Optimization script."
         )
         self.main_console.write(
-            "Start by going to setup and configure your measurement setup or use Load settings to load a previous configuration."
-        )
-        self.main_console.write(
-            "It is important that you have the following settings: 1) REW open on your main monitor with the 'Measure' button visible. 2) Set REW measurement sweep file. 3) Select 'Use as entered' and deselect 'Prefix with output'"
-        )
-        self.main_console.write(
-            "[italic]Note that the position name 'Reference' carries a special significance and should be used for your first measurements of the Main Listening Position (MLP) / reference position.[/italic]"
+            "Please check the instructions for more information on how to use this program."
         )
 
     def generate_measurement_schedule(self):
@@ -606,7 +602,9 @@ class AutoSweepApp(App):
 
         elif event.button.id == "serve":
             self.main_console = self.query_one("#ConsoleLog", RichLog)
-            self.main_console.write("Starting server...")
+            self.main_console.write(
+                f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['INFO']} Starting server..."
+            )
             # self.app_event_loop = asyncio.get_event_loop()
             # await self.app_event_loop.stop()
             self.exit()
@@ -621,16 +619,6 @@ class AutoSweepApp(App):
                     ["uv", "run", "textual", "run", "--dev", "src/main.py", "--serve"]
                 )
 
-            # run_server()
-        # elif event.button.id == "serve":
-        #     self.main_console = self.query_one("#ConsoleLog", RichLog)
-        #     self.main_console.write("Starting server...")
-        #     thread = threading.Thread(target=run_server, daemon=True)
-        #     thread.start()
-        #     await self.push_screen("ServeScreen")
-        #     self.serve_url = self.query_one("#ServeUrl", Link)
-        #     self.serve_url.update("http://" + get_ip() + ":8000")
-
         elif event.button.id == "quit":
             await self.action_quit_safely()
 
@@ -640,31 +628,20 @@ class AutoSweepApp(App):
         elif event.button.id == "info":
             await self.push_screen("InfoScreen")
 
-    # def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
-    #     """Handles worker completion and updates the UI."""
-    #     self.start_button = self.query_one("#start", Button)
-    #     self.stop_button = self.query_one("#stop", Button)
-    #     if event.state.name == "SUCCESS":
-    #         self.stop_button.disabled = True
-    #         self.start_button.variant = "success"
-    #         self.start_button.label = "Start measurement"
-    #         self.complete_measurement()
-    #     elif event.state.name == "CANCELLED":
-    #         self.main_console.write("Measurement cancelled.")
-    #         self.stop_button.disabled = True
-    #         self.start_button.variant = "success"
-    #         self.start_button.label = "Start measurement"
-
     def start_measurement_schedule(self):
         """Runs the measurement schedule in a worker thread."""
 
         # If a worker is running, resume it
         if hasattr(self, "worker") and self.worker is not None:
             self.pause_event.set()  # Unpause the worker
-            self.main_console.write("Resuming measurement schedule...")
+            self.main_console.write(
+                f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['INFO']} Resuming measurement schedule..."
+            )
             return  # Exit, no need to start a new one
 
-        self.main_console.write("[green]Starting measurement schedule...[/green]")
+        self.main_console.write(
+            f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['INFO']} [green]Starting measurement schedule...[/green]"
+        )
 
         self.stop_event = threading.Event()  # Used to stop the thread
         self.pause_event = threading.Event()  # Used to pause execution
@@ -710,7 +687,9 @@ class AutoSweepApp(App):
 
     def action_pause_measurement_schedule(self):
         """Pauses the measurement schedule."""
-        self.main_console.write("[yellow]Pausing measurement schedule...[/yellow]")
+        self.main_console.write(
+            f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['INFO']} [yellow]Pausing measurement schedule...[/yellow]"
+        )
         self.pause_event.clear()
 
     def action_wait_input_measurement_schedule(self, input: str) -> None:
@@ -724,7 +703,9 @@ class AutoSweepApp(App):
     def action_complete_measurement_schedule(self):
         """Completes the measurement schedule."""
 
-        self.main_console.write("[green]Completed measurement schedule.[/green]")
+        self.main_console.write(
+            f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['INFO']} [green]Completed measurement schedule.[/green]"
+        )
         if hasattr(self, "stop_event") and hasattr(self, "pause_event"):
             self.stop_event.set()  # Tell the thread to exit
             self.pause_event.set()  # Unpause to allow clean exit
@@ -746,7 +727,9 @@ class AutoSweepApp(App):
 
     async def action_quit_safely(self):
         """Quits the application."""
-        self.main_console.write("Quitting safely...")
+        self.main_console.write(
+            f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {config.PRINTFORMAT['WARNING']} Quitting safely..."
+        )
 
         self.action_stop_measurement_schedule()
         # Check if worker exists and cancel it
@@ -774,7 +757,10 @@ class MessageUI:
 
     def info(self, contents: str):
         """Send an informational message to the UI."""
-        self.call_from_thread(self.main_console.write, contents)
+        _timestamped_contents = (
+            f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {contents}"
+        )
+        self.call_from_thread(self.main_console.write, _timestamped_contents)
 
     def update(self):
         """Trigger a UI update for the measurement schedule."""

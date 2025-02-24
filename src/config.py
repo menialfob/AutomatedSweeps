@@ -101,6 +101,13 @@ BASE_URL_ENDPOINT = "http://localhost:4735"
 REW_NAME_OFFSET = (-560, -642)
 REW_NOTES_OFFSET = (-560, -470)
 
+PRINTFORMAT = {
+    "OK": "[green][OK][/green]",
+    "INFO": "[INFO]",
+    "ERROR": "[red][ERROR][/red]",
+    "WARNING": "[yellow][WARNING][/yellow]",
+}
+
 # Instructions markdown
 INSTRUCTIONS = """
 # AutomatedSweeps Instructions
