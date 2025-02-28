@@ -21,7 +21,12 @@ def play_sweep(channel):
 
     # Initialize VLC instance and media player
     global player  # Keep reference to avoid garbage collection
-    vlc_instance = vlc.Instance("--quiet")
+
+    # Path to VLC preferences (vlcrc) in the current user profile
+    cfg = os.path.join(os.environ["APPDATA"], "vlc", "vlcrc")
+    # Create VLC instance that loads user config (no-ignore to actually use it)
+    vlc_instance = vlc.Instance("--no-ignore-config", f"--config={cfg}")
+
     player = vlc_instance.media_player_new()
 
     try:
